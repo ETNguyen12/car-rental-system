@@ -21,7 +21,7 @@ function CustomerMain() {
 
   return (
     <div className="container-fluid">
-      <h1>Example Main Page</h1>
+      <h1>Customer Page</h1>
       {exampleData ? (
         <p>{exampleData.message}</p>
       ) : (

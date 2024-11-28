@@ -2,6 +2,7 @@ import React from 'react';
 import './styles/App.css';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import StartImage from './components/StartImage'; 
+import { AuthMain } from './pages/auth';
 import { CustomerMain } from './pages/customer';
 import { ManagerMain } from './pages/manager';
 
@@ -17,6 +18,9 @@ function App() {
                 <StartImage height="300px" width="300px" />
                 <header className="App-header mt-3">
                   <nav>
+                    <Link to="/auth">Auth Page</Link>
+                  </nav>
+                  <nav>
                     <Link to="/customer">Customer Page</Link>
                   </nav>
                   <nav>
@@ -27,6 +31,7 @@ function App() {
             </>
           }
         />
+        <Route path="/auth" element={<AuthMain />} />
         <Route path="/customer" element={<CustomerMain />} />
         <Route path="/manager" element={<ManagerMain />} />
       </Routes>
