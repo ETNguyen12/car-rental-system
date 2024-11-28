@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import StartImage from './components/StartImage'; 
 import { AuthMain } from './pages/auth';
 import { CustomerMain } from './pages/customer';
-import { ManagerMain } from './pages/manager';
+import { EmployeeMain } from './pages/employee';
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
                     <Link to="/customer">Customer Page</Link>
                   </nav>
                   <nav>
-                    <Link to="/manager">Manager Page</Link>
+                    <Link to="/employee">Employee Page</Link>
                   </nav>
                 </header>
               </div>
@@ -33,7 +33,7 @@ function App() {
         />
         <Route path="/auth" element={<AuthMain />} />
         <Route path="/customer" element={<CustomerMain />} />
-        <Route path="/manager" element={<ManagerMain />} />
+        <Route path="/employee" element={<EmployeeMain />} />
       </Routes>
     </Router>
   );

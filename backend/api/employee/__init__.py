@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-manager_bp = Blueprint('manager', __name__)
+employee_bp = Blueprint('employee', __name__)
 
 from . import routes

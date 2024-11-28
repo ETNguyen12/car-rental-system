@@ -1,0 +1,3 @@
+insert into public.vehicles (id, color, type, year, make, model, vin, license_plate, fuel, seat_capacity, odometer_reading, maintenance_due_date, daily_rental_rate, total_times_rented, status, created_at, last_updated_at)
+values  (2, 'Black', 'SUV', '2014', 'Acura', 'MDX', '2FTRX18L8XCA12345', 'JLY1774', 'Hybrid', 7, 114280, '2024-12-12', 229, 0, 'Available', '2024-11-27 19:29:59.000000', '2024-11-27 19:30:03.000000'),
+        (1, 'White', 'Sedan', '2018', 'Acura', 'TLX', '1HGCM82633A123456', 'SGR9559', 'Gasoline', 5, 72150, '2026-06-07', 149, 0, 'Available', '2024-11-27 19:28:15.000000', '2024-11-27 19:28:17.000000');

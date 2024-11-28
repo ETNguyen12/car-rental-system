@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import api from '../../services/api'; // Axios instance with base URL
 
-function ManagerMain() {
+function EmployeeMain() {
   const [exampleData, setExampleData] = useState(null); // State to hold data
 
   // Fetch data from /example
   const fetchAPI = async () => {
     try {
-      const response = await api.get("/manager"); 
+      const response = await api.get("/employee"); 
       setExampleData(response.data); 
     } catch (error) {
       console.error("Error fetching example data:", error);
@@ -21,7 +21,7 @@ function ManagerMain() {
 
   return (
     <div className="container-fluid">
-      <h1>Manager Page</h1>
+      <h1>Employee Page</h1>
       {exampleData ? (
         <p>{exampleData.message}</p>
       ) : (
@@ -31,4 +31,4 @@ function ManagerMain() {
   );
 }
 
-export default ManagerMain;
+export default EmployeeMain;
