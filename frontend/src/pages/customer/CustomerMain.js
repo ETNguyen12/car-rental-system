@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import api from '../../services/api'; // Axios instance with base URL
 
-function ExampleMain() {
+function CustomerMain() {
   const [exampleData, setExampleData] = useState(null); // State to hold data
 
   // Fetch data from /example
   const fetchAPI = async () => {
     try {
-      const response = await api.get("/example/test"); 
+      const response = await api.get("/customer"); 
       setExampleData(response.data); 
     } catch (error) {
       console.error("Error fetching example data:", error);
@@ -23,13 +23,7 @@ function ExampleMain() {
     <div className="container-fluid">
       <h1>Example Main Page</h1>
       {exampleData ? (
-        <ul>
-          {exampleData.map((item) => (
-            <li key={item.test_id}>
-              Test ID: {item.test_id}, Test Name: {item.test_name}
-            </li>
-          ))}
-        </ul>
+        <p>{exampleData.message}</p>
       ) : (
         <p>Loading...</p> // Show loading text while data is being fetched
       )}
@@ -37,4 +31,4 @@ function ExampleMain() {
   );
 }
 
-export default ExampleMain;
+export default CustomerMain;
