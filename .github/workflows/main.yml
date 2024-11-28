@@ -45,7 +45,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git checkout -b main  # Create and switch to the main branch
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/project-3-01-beastmode.git
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/car-rental-system.git
           
           git add .
           git commit -m "Deploy backend directory" || echo "No changes to commit"
