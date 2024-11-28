@@ -18,12 +18,12 @@ if os.getenv("FLASK_ENV") == "production":
     @app.errorhandler(404)
     def not_found(e):
         return send_from_directory(app.static_folder, 'index.html')
-else:
-    # Initialize the Flask app
+    
+# Regular flask app in development
+else: 
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Register extensions and blueprints
     register_extensions(app)
     register_blueprints(app)
 
