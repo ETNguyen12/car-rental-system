@@ -12,7 +12,7 @@ function EmployeeMain() {
 
   const fetchRentals = async () => {
     try {
-      const response = await api.get("/employee/rentals");
+      const response = await api.get("/employee/rentals/info");
       setRentals(response.data);
     } catch (error) {
       console.error("Error fetching rentals:", error);

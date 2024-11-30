@@ -34,7 +34,7 @@ CREATE TYPE "vehicle_status" AS ENUM (
 );
 
 CREATE TYPE "statuses" AS ENUM (
-  'Pending Payment',
+  'Unpaid',
   'Paid',
   'Reserved',
   'Ongoing',
@@ -105,7 +105,7 @@ CREATE TABLE "rentals" (
   "odometer_before" INT,
   "odometer_after" INT,
   "total_price" FLOAT,
-  "status" statuses DEFAULT 'Pending Payment',
+  "status" statuses DEFAULT 'Unpaid',
   "created_at" TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
   "last_updated_at" TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
 );
@@ -116,7 +116,7 @@ CREATE TABLE "rental_fees" (
   "type" fee_type,
   "description" TEXT,
   "amount" FLOAT,
-  "status" statuses DEFAULT 'Pending Payment',
+  "status" statuses DEFAULT 'Unpaid',
   "due_date" DATE,
   "created_at" TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
   "last_updated_at" TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)

@@ -4,7 +4,7 @@ from flask import request, jsonify
 from sqlalchemy import text
 from api.extensions import db
 
-@employee_bp.route('/rentals', methods=['GET'])
+@employee_bp.route('/rentals/info', methods=['GET'])
 def get_rentals():
     rentals = db.session.execute(
         text("""
@@ -242,44 +242,144 @@ def delete_rental(rental_id):
         db.session.rollback()
         return jsonify({"error": "Failed to delete rental", "details": str(e)}), 500
 
-# Fetch rental fees
-@employee_bp.route('/rental-fees', methods=['GET'])
+@employee_bp.route('/rental-fees/info', methods=['GET'])
 def get_rental_fees():
     try:
-        # Optional: filter by rental_id if passed in query parameters
-        rental_id = request.args.get('rental_id')
+        # Optional query parameters for filtering
+        status = request.args.get('status')
+        due_date = request.args.get('due_date')
+        fee_type = request.args.get('type')
 
-        if rental_id:
-            query = text("""
-                SELECT
-                    id,
-                    rental_id,
-                    type,
-                    amount,
-                    due_date,
-                    status,
-                    description
-                FROM rental_fees
-                WHERE rental_id = :rental_id
-                ORDER BY due_date DESC
-            """)
-            params = {'rental_id': rental_id}
-        else:
-            query = text("""
-                SELECT
-                    id,
-                    rental_id,
-                    type,
-                    amount,
-                    due_date,
-                    status,
-                    description
-                FROM rental_fees
-                ORDER BY due_date DESC
-            """)
-            params = {}
+        query = """
+            SELECT 
+                rf.id,
+                rf.rental_id,
+                rf.type,
+                rf.amount,
+                rf.status,
+                rf.due_date,
+                u.first_name || ' ' || u.last_name AS name,
+                u.phone_number,
+                u.email
+            FROM rental_fees rf
+            JOIN rentals r ON rf.rental_id = r.id
+            JOIN users u ON r.customer_id = u.id
+        """
+        conditions = []
+        params = {}
 
-        rental_fees = db.session.execute(query, params).fetchall()
-        return jsonify([dict(row._mapping) for row in rental_fees]), 200
+        if status:
+            conditions.append("rf.status = :status")
+            params['status'] = status
+        if due_date:
+            conditions.append("rf.due_date = :due_date")
+            params['due_date'] = due_date
+        if fee_type:
+            conditions.append("rf.type = :type")
+            params['type'] = fee_type
+
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+
+        query += " ORDER BY rf.due_date ASC"
+
+        result = db.session.execute(text(query), params).fetchall()
+
+        return jsonify([dict(row._mapping) for row in result]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@employee_bp.route('/rental-fees', methods=['POST'])
+def create_rental_fee():
+    try:
+        data = request.json
+        required_fields = ['rental_id', 'type', 'description', 'amount', 'status', 'due_date']
+        missing_fields = [field for field in required_fields if field not in data]
+
+        if missing_fields:
+            return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
+
+        db.session.execute(
+            text("""
+                INSERT INTO rental_fees (rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
+                VALUES (:rental_id, :type, :description, :amount, :status, :due_date, NOW(), NOW())
+            """),
+            {
+                'rental_id': data['rental_id'],
+                'type': data['type'],
+                'description': data['description'],
+                'amount': data['amount'],
+                'status': data['status'],
+                'due_date': data['due_date']
+            }
+        )
+        db.session.commit()
+
+        return jsonify({"message": "Rental fee created successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@employee_bp.route('/rental-fees/<int:fee_id>/status', methods=['PUT'])
+def update_rental_fee_status(fee_id):
+    try:
+        data = request.json
+        new_status = data.get('status')
+
+        if not new_status:
+            return jsonify({"error": "Missing 'status' field"}), 400
+
+        db.session.execute(
+            text("""
+                UPDATE rental_fees
+                SET status = :status, last_updated_at = NOW()
+                WHERE id = :fee_id
+            """),
+            {'status': new_status, 'fee_id': fee_id}
+        )
+        db.session.commit()
+
+        return jsonify({"message": "Rental fee status updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@employee_bp.route('/rental-fees/<int:fee_id>', methods=['DELETE'])
+def delete_rental_fee(fee_id):
+    try:
+        db.session.execute(
+            text("DELETE FROM rental_fees WHERE id = :fee_id"),
+            {'fee_id': fee_id}
+        )
+        db.session.commit()
+
+        return jsonify({"message": "Rental fee deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+@employee_bp.route('/vehicles/info', methods=['GET'])
+def get_vehicles():
+    try:
+        query = """
+            SELECT 
+                id,
+                year || ' ' || make || ' ' || model AS model,
+                type,
+                vin,
+                color,
+                fuel,
+                odometer_reading,
+                daily_rental_rate,
+                status
+            FROM vehicles
+            ORDER BY id ASC
+        """
+        vehicles = db.session.execute(text(query)).fetchall()
+        return jsonify([dict(row._mapping) for row in vehicles]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+

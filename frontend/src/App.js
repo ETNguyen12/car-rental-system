@@ -3,8 +3,7 @@ import './styles/App.css';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import StartImage from './components/StartImage'; 
 import { AuthMain } from './pages/auth';
-import { CustomerMain } from './pages/customer';
-import { EmployeeMain } from './pages/employee';
+import { EmployeeMain, FeeMain, VehicleMain, UserMain } from './pages/employee';
 
 function App() {
   return (
@@ -21,9 +20,6 @@ function App() {
                     <Link to="/auth">Auth Page</Link>
                   </nav>
                   <nav>
-                    <Link to="/customer">Customer Page</Link>
-                  </nav>
-                  <nav>
                     <Link to="/employee">Employee Page</Link>
                   </nav>
                 </header>
@@ -32,8 +28,11 @@ function App() {
           }
         />
         <Route path="/auth" element={<AuthMain />} />
-        <Route path="/customer" element={<CustomerMain />} />
-        <Route path="/employee" element={<EmployeeMain />} />
+        <Route path="/employee/" element={<EmployeeMain />} />
+        <Route path="/employee/rentals" element={<EmployeeMain />} />
+        <Route path="/employee/fees" element={<FeeMain />} /> 
+        <Route path="/employee/vehicles" element={<VehicleMain />} /> 
+        <Route path="/employee/users" element={<UserMain />} /> 
       </Routes>
     </Router>
   );

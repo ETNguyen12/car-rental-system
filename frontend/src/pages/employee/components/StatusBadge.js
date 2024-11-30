@@ -2,12 +2,11 @@ import React from "react";
 
 const StatusBadge = ({ status }) => {
   const badgeClass = {
-    "Pending Payment": "bg-warning text-dark",
-    "Ongoing": "bg-success",
-    "Completed": "bg-secondary",
-    "Cancelled": "bg-danger",
-    "Reserved": "bg-info",
-  }[status] || "bg-dark";
+    "Unpaid": "bg-danger text-white",
+    "Ongoing": "bg-info",
+    "Paid": "bg-success",
+    "Reserved": "bg-success",
+  }[status] || "bg-secondary";
 
   return <span className={`badge ${badgeClass}`}>{status}</span>;
 };

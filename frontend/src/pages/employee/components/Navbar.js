@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const Navbar = ({ onRentalsClick }) => {
+const Navbar = () => {
   return (
     <div
       className="bg-white shadow-sm"
@@ -8,20 +9,18 @@ const Navbar = ({ onRentalsClick }) => {
     >
       <h4 className="p-3 border-bottom table_name">Tables</h4>
       <ul className="nav flex-column">
-        <li className="nav-item">
-          <button className="btn btn-link nav-link active" onClick={onRentalsClick}>
-            Rentals
-          </button>
-        </li>
-        <li className="nav-item">
-          <button className="btn btn-link nav-link">Rental Fees</button>
-        </li>
-        <li className="nav-item">
-          <button className="btn btn-link nav-link">Vehicles</button>
-        </li>
-        <li className="nav-item">
-          <button className="btn btn-link nav-link">Users</button>
-        </li>
+        <Link to="/employee" className="btn btn-link nav-link">
+          Rentals
+        </Link>
+        <Link to="/employee/fees" className="btn btn-link nav-link">
+          Rental Fees
+        </Link>
+        <Link to="/employee/vehicles" className="btn btn-link nav-link">
+          Vehicles
+        </Link>
+        <Link to="/employee/users" className="btn btn-link nav-link">
+          Users
+        </Link>
       </ul>
     </div>
   );
