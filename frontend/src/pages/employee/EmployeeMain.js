@@ -17,8 +17,22 @@ function EmployeeMain() {
     }
   };
 
+  const updateVehicleOdometers = async () => {
+    try {
+      await api.put("/employee/vehicles/update_odometer");
+      console.log("Vehicle odometer values updated successfully");
+    } catch (error) {
+      console.error("Error updating vehicle odometer values:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchRentals();
+    const initializeData = async () => {
+      await updateVehicleOdometers(); // Ensure odometer values are updated first
+      await fetchRentals(); // Fetch rentals after updating odometers
+    };
+
+    initializeData();
   }, []);
 
   const formatDateRange = (startDate, endDate) => {
@@ -33,8 +47,8 @@ function EmployeeMain() {
     };
   
     return `${format(start, true)} - ${format(end, true)}`;
-  };  
-  
+  };
+
   const formatCustomerName = (fullName) => {
     const [firstName, lastName] = fullName.split(" ");
     return `${firstName} ${lastName?.[0] || ""}.`;

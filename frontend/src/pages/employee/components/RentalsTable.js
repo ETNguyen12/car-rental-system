@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import NewRentalModal from "./NewRentalModal";
 
-const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName, formatDateRange }) => {
-    
+const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName, formatDateRange, onAddRental }) => {
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className="bg-light" style={{ width: "60%", overflowY: "auto" }}>
-      <h4 className="p-3 border-bottom">Rentals</h4>
+      <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
+        <h4>Rentals</h4>
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowModal(true)}
+        >
+          +
+        </button>
+      </div>
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
@@ -35,6 +45,13 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
           </tbody>
         </table>
       </div>
+
+      {/* New Rental Modal */}
+      <NewRentalModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onAddRental={onAddRental}
+      />
     </div>
   );
 };

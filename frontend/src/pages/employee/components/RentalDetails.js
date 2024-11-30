@@ -18,14 +18,8 @@ const RentalDetails = ({ selectedRental }) => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const day = date.getDate().toString().padStart(2, "0");
     const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const period = hours >= 12 ? "PM" : "AM";
 
-    // Convert hours to 12-hour format
-    const hours12 = (hours % 12 || 12).toString();
-
-    return `${month}/${day}/${year}, ${hours12}:${minutes} ${period}`;
+    return `${month}/${day}/${year}`;
   };
 
   const formatOdometer = (before, after) => {
@@ -88,12 +82,24 @@ const RentalDetails = ({ selectedRental }) => {
         <table className="table table-bordered">
           <tbody>
             <tr>
-              <td><strong>Model:</strong></td>
+              <td><strong>Specification:</strong></td>
               <td>{selectedRental.vehicle}</td>
             </tr>
             <tr>
-              <td><strong>VIN:</strong></td>
-              <td>{selectedRental.vin || "N/A"}</td>
+              <td><strong>Color:</strong></td>
+              <td>{selectedRental.color}</td>
+            </tr>
+            <tr>
+              <td><strong>Fuel:</strong></td>
+              <td>{selectedRental.fuel || "N/A"}</td>
+            </tr>
+            <tr>
+              <td><strong>Seat Capacity:</strong></td>
+              <td>{selectedRental.seat_capacity || "N/A"}</td>
+            </tr>
+            <tr>
+              <td><strong>Daily Rental Rate:</strong></td>
+              <td>{selectedRental.daily_rental_rate || "N/A"}</td>
             </tr>
           </tbody>
         </table>
