@@ -9,4 +9,4 @@ def example():
 
 @customer_bp.route('/login', methods=['POST'])
 def login():
-    return {}
+    return {"error": "Welcome"}

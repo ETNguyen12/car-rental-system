@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../services/api"; // Axios instance with base URL
+import { useNavigate } from "react-router-dom";
 import FormField from "./components/FormField";
 import FormStep from "./components/FormStep";
 import StateDropdown from "./components/StateDropdown";
@@ -9,6 +10,7 @@ function AuthMain() {
   const [step, setStep] = useState(1); // Step state for signup
   const [error, setError] = useState(null); // Error state
 
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({
     first_name: "",
@@ -37,7 +39,13 @@ function AuthMain() {
     e.preventDefault();
     try {
       const response = await api.post("/auth/login", loginData);
-      console.log("Login successful:", response.data);
+      console.log(response);  
+      if (response.data.user.type === "Employee") {
+        navigate("/employee");
+      }
+      else {
+        navigate("/customer");
+      }
     } catch (err) {
       console.error("Login error:", err);
       showError("Failed to log in. Please check your credentials.");

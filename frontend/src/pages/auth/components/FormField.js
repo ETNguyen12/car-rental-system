@@ -1,6 +1,4 @@
 function FormField({ id, label, type, value, onChange, options = [], required = true }) {
-  console.log(`Rendering field "${id}" with options:`, options);
-
   return (
     <div className="mb-3">
       <label htmlFor={id} className="form-label">

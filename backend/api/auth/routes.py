@@ -124,7 +124,7 @@ def login():
             return jsonify({"status": "error", "message": "Invalid email or password"}), 401
 
         # Successful login
-        return jsonify({"status": "success", "message": "Login successful", "user": {"id": user.id, "email": user.email}}), 200
+        return jsonify({"status": "success", "message": "Login successful", "user": {"id": user.id, "email": user.email, "type": user.type}}), 200
 
     except Exception as e:
         return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500
