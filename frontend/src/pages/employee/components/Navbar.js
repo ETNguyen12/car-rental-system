@@ -4,7 +4,7 @@ const Navbar = ({ onRentalsClick }) => {
   return (
     <div
       className="bg-white shadow-sm"
-      style={{ width: "15%", minWidth: "150px" }}
+      style={{ width: "10%", minWidth: "150px" }}
     >
       <h4 className="p-3 border-bottom">Tables</h4>
       <ul className="nav flex-column">
@@ -14,13 +14,13 @@ const Navbar = ({ onRentalsClick }) => {
           </button>
         </li>
         <li className="nav-item">
-          <button className="btn btn-link nav-link">Users</button>
+          <button className="btn btn-link nav-link">Rental Fees</button>
         </li>
         <li className="nav-item">
           <button className="btn btn-link nav-link">Vehicles</button>
         </li>
         <li className="nav-item">
-          <button className="btn btn-link nav-link">Rental Fees</button>
+          <button className="btn btn-link nav-link">Users</button>
         </li>
       </ul>
     </div>

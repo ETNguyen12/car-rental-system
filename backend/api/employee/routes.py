@@ -11,10 +11,12 @@ def get_rentals():
             SELECT 
                 rentals.id AS rental_id,
                 users.first_name || ' ' || users.last_name AS customer_name,
-                vehicles.make || ' ' || vehicles.model AS vehicle,
+                vehicles.year || ' ' || vehicles.make || ' ' || vehicles.model AS vehicle,
                 vehicles.vin,
                 rentals.pickup_date,
                 rentals.dropoff_date,
+                rentals.odometer_before,
+                rentals.odometer_after,
                 rentals.status,
                 rentals.total_price,
                 users.id,

@@ -1,26 +1,38 @@
 import React from "react";
 import StatusBadge from "./StatusBadge";
 
-const RentalDetails = ({ selectedRental, formatDateRange }) => {
-  if (!selectedRental) {
-    return <p className="text-center">Select a rental to see details.</p>;
-  }
+const RentalDetails = ({ selectedRental }) => {
+    if (!selectedRental) {
+        return (
+          <>
+            <h4 className="mb-4 border-bottom pb-2 text-center">Rental Details</h4>
+            <p className="text-center">Select a rental to see details.</p>
+          </>
+        );
+    }
+      
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-  
+
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const day = date.getDate().toString().padStart(2, "0");
     const year = date.getFullYear();
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     const period = hours >= 12 ? "PM" : "AM";
-  
+
     // Convert hours to 12-hour format
     const hours12 = (hours % 12 || 12).toString();
-  
+
     return `${month}/${day}/${year}, ${hours12}:${minutes} ${period}`;
-  };  
+  };
+
+  const formatOdometer = (before, after) => {
+    const formattedBefore = before?.toLocaleString() || "N/A";
+    const formattedAfter = after !== null ? after.toLocaleString() : "...";
+    return `${formattedBefore} - ${formattedAfter}`;
+  };
 
   return (
     <div>
@@ -49,12 +61,16 @@ const RentalDetails = ({ selectedRental, formatDateRange }) => {
         <table className="table table-bordered">
           <tbody>
             <tr>
-                <td><strong>Pickup Date:</strong></td>
-                <td>{formatDate(selectedRental.pickup_date)}</td>
+              <td><strong>Pickup Date:</strong></td>
+              <td>{formatDate(selectedRental.pickup_date)}</td>
             </tr>
             <tr>
-                <td><strong>Dropoff Date:</strong></td>
-                <td>{formatDate(selectedRental.dropoff_date)}</td>
+              <td><strong>Dropoff Date:</strong></td>
+              <td>{formatDate(selectedRental.dropoff_date)}</td>
+            </tr>
+            <tr>
+              <td><strong>Odometer:</strong></td>
+              <td>{formatOdometer(selectedRental.odometer_before, selectedRental.odometer_after)}</td>
             </tr>
             <tr>
               <td><strong>Total Price:</strong></td>

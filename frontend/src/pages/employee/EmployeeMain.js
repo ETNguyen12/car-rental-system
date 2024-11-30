@@ -26,19 +26,14 @@ function EmployeeMain() {
     const end = new Date(endDate);
   
     const format = (date, includeYear = false) => {
-      const day = date.getDate().toString().padStart(2, "0");
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
       const year = includeYear ? `/${date.getFullYear().toString().slice(-2)}` : "";
-      return `${day}/${month}${year}`;
+      return `${month}/${day}${year}`;
     };
   
-    if (start.getFullYear() === end.getFullYear()) {
-      // Same year
-      return `${format(start)} - ${format(end, true)}`;
-    }
-    // Different years
     return `${format(start, true)} - ${format(end, true)}`;
-  };
+  };  
   
   const formatCustomerName = (fullName) => {
     const [firstName, lastName] = fullName.split(" ");

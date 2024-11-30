@@ -6,6 +6,7 @@ const StatusBadge = ({ status }) => {
     "Ongoing": "bg-success",
     "Completed": "bg-secondary",
     "Cancelled": "bg-danger",
+    "Reserved": "bg-info",
   }[status] || "bg-dark";
 
   return <span className={`badge ${badgeClass}`}>{status}</span>;
