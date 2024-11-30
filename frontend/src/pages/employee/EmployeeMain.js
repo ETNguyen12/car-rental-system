@@ -3,8 +3,8 @@ import api from '../../services/api';
 import Navbar from "./components/Navbar";
 import RentalsTable from "./components/RentalsTable";
 import RentalDetails from "./components/RentalDetails";
-import { toast } from "react-toastify"; // Import React-Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
+import { toast } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
 
 function EmployeeMain() {
   const [rentals, setRentals] = useState([]);
@@ -28,12 +28,22 @@ function EmployeeMain() {
     }
   };
 
+  const updateRentalStatus = async () => {
+    try {
+      await api.put("/employee/rentals/update_status");
+      console.log("Rental statuses updated successfully");
+    } catch (error) {
+      console.error("Error updating rental statuses:", error);
+      toast.error("Failed to update rental statuses.");
+    }
+  };
+
   const onCompleteRental = async (rentalId, odometerAfter) => {
     try {
       await api.put(`/employee/rentals/${rentalId}/complete`, { odometer_after: odometerAfter });
       toast.success("Rental marked as completed successfully!");
-      fetchRentals(); // Refresh rentals after completion
-      setSelectedRental(null); // Deselect the rental
+      fetchRentals(); 
+      setSelectedRental(null); 
     } catch (error) {
       console.error("Error completing rental:", error);
       toast.error("Failed to mark rental as completed. Please try again.");
@@ -44,8 +54,8 @@ function EmployeeMain() {
     try {
       await api.delete(`/employee/rentals/${rentalId}`);
       toast.success("Rental deleted successfully!");
-      fetchRentals(); // Refresh rentals after deletion
-      setSelectedRental(null); // Deselect the rental
+      fetchRentals(); 
+      setSelectedRental(null); 
     } catch (error) {
       console.error("Error deleting rental:", error);
       toast.error("Failed to delete rental. Please try again.");
@@ -54,8 +64,9 @@ function EmployeeMain() {
 
   useEffect(() => {
     const initializeData = async () => {
-      await updateVehicleOdometers(); // Ensure odometer values are updated first
-      await fetchRentals(); // Fetch rentals after updating odometers
+      await updateVehicleOdometers(); 
+      await updateRentalStatus(); 
+      await fetchRentals(); 
     };
 
     initializeData();
@@ -81,7 +92,7 @@ function EmployeeMain() {
   };
 
   return (
-    <div className="container-fluid bg-light py-4" style={{ display: "flex", height: "100vh" }}>
+    <div className="container-fluid bg-light py-2" style={{ display: "flex", height: "100vh" }}>
       <Navbar onRentalsClick={fetchRentals} />
       <RentalsTable
         rentals={rentals}

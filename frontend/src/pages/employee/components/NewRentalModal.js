@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../services/api";
-import '../../../styles/employee.css';
-import { toast, ToastContainer } from "react-toastify"; 
+import "../../../styles/employee.css";
+import { toast, ToastContainer } from "react-toastify";
+import { Modal, Button } from "react-bootstrap";
 
 const NewRentalModal = ({ show, onClose, fetchRentals }) => {
   const [customers, setCustomers] = useState([]);
@@ -137,22 +138,18 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
       total_price: parseFloat(newRental.total_price) || 0,
       status: newRental.status,
     };
-  
+
     try {
       const response = await api.post("/employee/rentals/create", payload);
       if (response.status === 201) {
-        onClose(); // Close the modal immediately
-        
-        // Ensure fetchRentals is called after modal closes
+        onClose();
         fetchRentals();
-  
-        // Show the toast after the modal is closed and rentals are refreshed
+
         toast.success("Rental created successfully!", {
           position: "top-right",
           autoClose: 3000,
         });
-  
-        // Reset state
+
         setNewRental({
           customer_id: "",
           customer_name: "",
@@ -166,14 +163,14 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
         });
         setCustomerSearch("");
         setCustomers([]);
-        setCurrentStep(1); // Reset modal steps
+        setCurrentStep(1);
       } else {
         toast.error(response.data.error || "Failed to create rental.");
       }
     } catch (error) {
       toast.error("Failed to create rental. Please try again.");
     }
-  };  
+  };
 
   const handleNext = () => {
     if (currentStep === 1) {
@@ -191,164 +188,136 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
     }
   };
 
-  if (!show) return null;
-
   return (
     <>
-      <ToastContainer /> {/* Add ToastContainer to display toasts */}
-      <div className="modal d-block new-rental-modal">
-        <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "600px" }}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Add New Rental</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => {
-                  onClose();
-                  setCurrentStep(1);
-                  setNewRental({
-                    customer_id: "",
-                    customer_name: "",
-                    vehicle_id: "",
-                    pickup_date: "",
-                    dropoff_date: "",
-                    odometer_before: 0,
-                    odometer_after: null,
-                    total_price: 0,
-                    status: "Pending Payment",
-                  });
-                  setCustomerSearch("");
-                  setCustomers([]);
-                }}
-              ></button>
-            </div>
-            <div className="modal-body">
-              {currentStep === 1 && (
-                <form>
-                  <div className="mb-3 position-relative">
-                    <label className="form-label">Customer</label>
+      <ToastContainer />
+      <Modal show={show} onHide={onClose} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Rental</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {currentStep === 1 && (
+            <form>
+              <div className="mb-3 position-relative">
+                <label className="form-label">Customer</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search customer name"
+                  value={customerSearch}
+                  onChange={handleCustomerSearch}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                />
+                {showDropdown && customers.length > 0 && (
+                  <ul className="list-group position-absolute w-100">
+                    {customers.map((customer) => (
+                      <li
+                        key={customer.id}
+                        className="list-group-item"
+                        onMouseDown={() => handleCustomerSelect(customer)}
+                      >
+                        {customer.name} ({customer.email})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {newRental.customer_id && (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label">Pickup Date</label>
                     <input
-                      type="text"
+                      type="date"
                       className="form-control"
-                      placeholder="Search customer name"
-                      value={customerSearch}
-                      onChange={handleCustomerSearch}
-                      onFocus={() => setShowDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                    />
-                    {showDropdown && customers.length > 0 && (
-                      <ul className="list-group position-absolute w-100">
-                        {customers.map((customer) => (
-                          <li
-                            key={customer.id}
-                            className="list-group-item"
-                            onMouseDown={() => handleCustomerSelect(customer)}
-                          >
-                            {customer.name} ({customer.email})
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  {newRental.customer_id && ( // Show dates only if customer is selected
-                    <>
-                      <div className="mb-3">
-                        <label className="form-label">Pickup Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="pickup_date"
-                          min={getTodayDate()}
-                          onChange={handleDateChange}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Dropoff Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="dropoff_date"
-                          min={
-                            newRental.pickup_date
-                              ? getNextDate(newRental.pickup_date)
-                              : getTodayDate()
-                          }
-                          onChange={handleDateChange}
-                        />
-                      </div>
-                    </>
-                  )}
-                </form>
-              )}
-
-              {currentStep === 2 && (
-                <form>
-                  <label className="form-label">Vehicle</label>
-                  {noVehiclesMessage ? (
-                    <div className="alert alert-warning" role="alert">
-                      No vehicles are available for the selected dates.
-                    </div>
-                  ) : (
-                    <select
-                      className="form-control"
-                      name="vehicle_id"
-                      value={newRental.vehicle_id}
-                      onChange={handleVehicleSelect}
-                    >
-                      <option value="" disabled hidden>
-                        Select Vehicle
-                      </option>
-                      {availableVehicles.map((vehicle) => (
-                        <option key={vehicle.id} value={vehicle.id}>
-                          {vehicle.model} (${vehicle.daily_rental_rate}/day)
-                        </option>
-                      ))}
-                    </select>
-                  )}
-
-                  <div
-                    className={`mb-3 mt-3 ${
-                      !newRental.vehicle_id ? "hidden-total-price" : ""
-                    }`}
-                  >
-                    <label className="form-label">Total Price</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={`$${newRental.total_price}`}
-                      readOnly
+                      name="pickup_date"
+                      min={getTodayDate()}
+                      onChange={handleDateChange}
                     />
                   </div>
-                </form>
+                  <div className="mb-3">
+                    <label className="form-label">Dropoff Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="dropoff_date"
+                      min={
+                        newRental.pickup_date
+                          ? getNextDate(newRental.pickup_date)
+                          : getTodayDate()
+                      }
+                      onChange={handleDateChange}
+                    />
+                  </div>
+                </>
               )}
-            </div>
-            <div className="modal-footer">
-              {currentStep > 1 && (
-                <button type="button" className="btn btn-secondary" onClick={handleBack}>
-                  Back
-                </button>
-              )}
-              {currentStep < 2 && (
-                <button type="button" className="btn btn-primary" onClick={handleNext}>
-                  Next
-                </button>
-              )}
-              {currentStep === 2 && (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleAddRental}
-                  disabled={!newRental.vehicle_id || noVehiclesMessage}
+            </form>
+          )}
+
+          {currentStep === 2 && (
+            <form>
+              <label className="form-label">Vehicle</label>
+              {noVehiclesMessage ? (
+                <div className="alert alert-warning" role="alert">
+                  No vehicles are available for the selected dates.
+                </div>
+              ) : (
+                <select
+                  className="form-control"
+                  name="vehicle_id"
+                  value={newRental.vehicle_id}
+                  onChange={handleVehicleSelect}
                 >
-                  Add Rental
-                </button>
+                  <option value="" disabled hidden>
+                    Select Vehicle
+                  </option>
+                  {availableVehicles.map((vehicle) => (
+                    <option key={vehicle.id} value={vehicle.id}>
+                      {vehicle.model} (${vehicle.daily_rental_rate}/day)
+                    </option>
+                  ))}
+                </select>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+
+              <div
+                className={`mb-3 mt-3 ${
+                  !newRental.vehicle_id ? "hidden-total-price" : ""
+                }`}
+              >
+                <label className="form-label">Total Price</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={`$${newRental.total_price}`}
+                  readOnly
+                />
+              </div>
+            </form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          {currentStep > 1 && (
+            <Button variant="secondary" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          {currentStep < 2 && (
+            <Button variant="primary" onClick={handleNext}>
+              Next
+            </Button>
+          )}
+          {currentStep === 2 && (
+            <Button
+              variant="primary"
+              onClick={handleAddRental}
+              disabled={!newRental.vehicle_id || noVehiclesMessage}
+            >
+              Add Rental
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

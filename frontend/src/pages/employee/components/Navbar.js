@@ -6,7 +6,7 @@ const Navbar = ({ onRentalsClick }) => {
       className="bg-white shadow-sm"
       style={{ width: "10%", minWidth: "150px" }}
     >
-      <h4 className="p-3 border-bottom">Tables</h4>
+      <h4 className="p-3 border-bottom table_name">Tables</h4>
       <ul className="nav flex-column">
         <li className="nav-item">
           <button className="btn btn-link nav-link active" onClick={onRentalsClick}>

@@ -35,6 +35,26 @@ def get_rentals():
 
     return jsonify([dict(row._mapping) for row in rentals]), 200 
 
+@employee_bp.route('/rentals/update_status', methods=['PUT'])
+def update_rental_status():
+    try:
+        current_date = datetime.now().date()
+        db.session.execute(
+            text("""
+                UPDATE rentals
+                SET status = 'Ongoing'
+                WHERE status != 'Completed'
+                AND pickup_date <= :current_date
+                AND dropoff_date >= :current_date
+            """),
+            {"current_date": current_date}
+        )
+        db.session.commit()
+        return jsonify({"message": "Rental statuses updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 
 @employee_bp.route('/vehicles/update_odometer', methods=['PUT'])
 def update_vehicle_odometer():
@@ -221,3 +241,45 @@ def delete_rental(rental_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Failed to delete rental", "details": str(e)}), 500
+
+# Fetch rental fees
+@employee_bp.route('/rental-fees', methods=['GET'])
+def get_rental_fees():
+    try:
+        # Optional: filter by rental_id if passed in query parameters
+        rental_id = request.args.get('rental_id')
+
+        if rental_id:
+            query = text("""
+                SELECT
+                    id,
+                    rental_id,
+                    type,
+                    amount,
+                    due_date,
+                    status,
+                    description
+                FROM rental_fees
+                WHERE rental_id = :rental_id
+                ORDER BY due_date DESC
+            """)
+            params = {'rental_id': rental_id}
+        else:
+            query = text("""
+                SELECT
+                    id,
+                    rental_id,
+                    type,
+                    amount,
+                    due_date,
+                    status,
+                    description
+                FROM rental_fees
+                ORDER BY due_date DESC
+            """)
+            params = {}
+
+        rental_fees = db.session.execute(query, params).fetchall()
+        return jsonify([dict(row._mapping) for row in rental_fees]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

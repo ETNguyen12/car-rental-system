@@ -11,3 +11,11 @@
     height: 100%;
     z-index: 1050;
 }
+
+.table_name {
+    margin-bottom: 0px;
+}
+
+.header {
+    height: 61.05px;
+}
