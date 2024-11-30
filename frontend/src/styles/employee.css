@@ -12,10 +12,11 @@
     z-index: 1050;
 }
 
-.table_name {
-    margin-bottom: 0px;
+.header_height {
+    height: 71px;
 }
 
-.header {
-    height: 61.05px;
-}
+.detail_header {
+    margin-bottom: 0px;
+    padding-bottom: 19px;
+}   

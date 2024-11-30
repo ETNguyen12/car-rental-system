@@ -5,8 +5,9 @@ import RentalsTable from "./components/RentalsTable";
 import RentalDetails from "./components/RentalDetails";
 import { toast } from "react-toastify"; 
 import "react-toastify/dist/ReactToastify.css";
+import "../../styles/employee.css";
 
-function EmployeeMain() {
+function RentalMain() {
   const [rentals, setRentals] = useState([]);
   const [selectedRental, setSelectedRental] = useState(null);
 
@@ -114,4 +115,4 @@ function EmployeeMain() {
   );
 }
 
-export default EmployeeMain;
+export default RentalMain;

@@ -7,7 +7,9 @@ const Navbar = () => {
       className="bg-white shadow-sm"
       style={{ width: "10%", minWidth: "150px" }}
     >
-      <h4 className="p-3 border-bottom table_name">Tables</h4>
+      <div className="border-bottom table_name text-center">
+        <img src="https://static.thenounproject.com/png/386502-200.png" alt="logo" style={{width: '50px', height: '50px', margin: '10px 0px'}}></img>
+      </div>
       <ul className="nav flex-column">
         <Link to="/employee" className="btn btn-link nav-link">
           Rentals

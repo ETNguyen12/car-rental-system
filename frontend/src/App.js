@@ -3,7 +3,7 @@ import './styles/App.css';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import StartImage from './components/StartImage'; 
 import { AuthMain } from './pages/auth';
-import { EmployeeMain, FeeMain, VehicleMain, UserMain } from './pages/employee';
+import { RentalMain, FeeMain, VehicleMain, UserMain } from './pages/employee';
 
 function App() {
   return (
@@ -28,8 +28,8 @@ function App() {
           }
         />
         <Route path="/auth" element={<AuthMain />} />
-        <Route path="/employee/" element={<EmployeeMain />} />
-        <Route path="/employee/rentals" element={<EmployeeMain />} />
+        <Route path="/employee/" element={<RentalMain />} />
+        <Route path="/employee/rentals" element={<RentalMain />} />
         <Route path="/employee/fees" element={<FeeMain />} /> 
         <Route path="/employee/vehicles" element={<VehicleMain />} /> 
         <Route path="/employee/users" element={<UserMain />} /> 

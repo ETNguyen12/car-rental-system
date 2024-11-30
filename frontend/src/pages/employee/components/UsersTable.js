@@ -12,8 +12,8 @@ const UsersTable = ({ users, selectedUser, onRowClick }) => {
             <tr>
               <th style={{ width: "30%" }}>Name</th>
               <th style={{ width: "25%" }}>Email</th>
-              <th style={{ width: "20%" }}>Role</th>
               <th style={{ width: "25%" }}>Phone</th>
+              <th style={{ width: "25%" }}>Last Rental</th>
             </tr>
           </thead>
           <tbody>
@@ -26,7 +26,7 @@ const UsersTable = ({ users, selectedUser, onRowClick }) => {
               >
                 <td>{user.name}</td>
                 <td>{user.email}</td>
-                <td>{user.role}</td>
+                <td>{user.phone_number}</td>
                 <td>{user.phone_number}</td>
               </tr>
             ))}

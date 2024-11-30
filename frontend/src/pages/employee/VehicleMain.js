@@ -5,6 +5,7 @@ import VehiclesTable from "./components/VehiclesTable";
 import VehicleDetails from "./components/VehicleDetails";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../../styles/employee.css";
 
 function VehicleMain() {
   const [vehicles, setVehicles] = useState([]);

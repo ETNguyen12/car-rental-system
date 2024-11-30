@@ -10,7 +10,7 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
   if (!selectedRental) {
     return (
       <>
-        <h4 className="mb-4 border-bottom pb-2 text-center table_name">Rental Details</h4>
+        <h4 className="mb-4 detail_header border-bottom text-center">Rental Details</h4>
         <p className="text-center">Select a rental to see details.</p>
       </>
     );
@@ -42,7 +42,7 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
 
   return (
     <div>
-      <h4 className="mb-4 border-bottom pb-2 text-center">Rental Details</h4>
+      <h4 className="mb-4 detail_header border-bottom text-center">Rental Details</h4>
       <div className="mb-3">
         <h6 className="text-primary">Customer Information</h6>
         <table className="table table-bordered">
@@ -125,14 +125,14 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
           onClick={() => setShowCompleteModal(true)}
           disabled={selectedRental.status === "Completed"}
         >
-          Complete
+          ✓
         </Button>
         <Button
           variant="danger"
           onClick={() => setShowDeleteModal(true)}
           disabled={selectedRental.status === "Completed" || selectedRental.status === "Ongoing"}
         >
-          Delete
+          ✗
         </Button>
       </div>
 

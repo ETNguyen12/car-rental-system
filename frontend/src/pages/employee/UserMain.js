@@ -5,6 +5,7 @@ import UsersTable from "./components/UsersTable";
 import UserDetails from "./components/UserDetails";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../../styles/employee.css";
 
 function UserMain() {
   const [users, setUsers] = useState([]);

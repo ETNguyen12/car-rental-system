@@ -5,6 +5,7 @@ import FeesTable from "./components/FeesTable";
 import FeeDetails from "./components/FeeDetails";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../../styles/employee.css";
 
 function FeeMain() {
   const [fees, setFees] = useState([]);

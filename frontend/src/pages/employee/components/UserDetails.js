@@ -4,7 +4,7 @@ const UserDetails = ({ selectedUser }) => {
   if (!selectedUser) {
     return (
       <>
-        <h4 className="mb-4 border-bottom pb-2 text-center">User Details</h4>
+        <h4 className="mb-4 detail_header border-bottom pb-2 text-center">User Details</h4>
         <p className="text-center">Select a user to see details.</p>
       </>
     );
@@ -12,7 +12,7 @@ const UserDetails = ({ selectedUser }) => {
 
   return (
     <div>
-      <h4 className="mb-4 border-bottom pb-2 text-center">User Details</h4>
+      <h4 className="mb-4 detail_header border-bottom pb-2 text-center">User Details</h4>
       <table className="table table-bordered">
         <tbody>
           <tr>
