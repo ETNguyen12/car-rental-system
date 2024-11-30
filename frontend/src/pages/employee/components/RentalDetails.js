@@ -1,24 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import { Modal, Button } from "react-bootstrap";
 
-const RentalDetails = ({ selectedRental }) => {
-    if (!selectedRental) {
-        return (
-          <>
-            <h4 className="mb-4 border-bottom pb-2 text-center">Rental Details</h4>
-            <p className="text-center">Select a rental to see details.</p>
-          </>
-        );
-    }
-      
+const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => {
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [odometerAfter, setOdometerAfter] = useState("");
+
+  if (!selectedRental) {
+    return (
+      <>
+        <h4 className="mb-4 border-bottom pb-2 text-center">Rental Details</h4>
+        <p className="text-center">Select a rental to see details.</p>
+      </>
+    );
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const day = date.getDate().toString().padStart(2, "0");
     const year = date.getFullYear();
-
     return `${month}/${day}/${year}`;
   };
 
@@ -26,6 +28,16 @@ const RentalDetails = ({ selectedRental }) => {
     const formattedBefore = before?.toLocaleString() || "N/A";
     const formattedAfter = after !== null ? after.toLocaleString() : "...";
     return `${formattedBefore} - ${formattedAfter}`;
+  };
+
+  const handleComplete = () => {
+    onCompleteRental(selectedRental.rental_id, odometerAfter);
+    setShowCompleteModal(false);
+  };
+
+  const handleDelete = () => {
+    onDeleteRental(selectedRental.rental_id);
+    setShowDeleteModal(false);
   };
 
   return (
@@ -104,6 +116,70 @@ const RentalDetails = ({ selectedRental }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Action Buttons */}
+      <div className="text-center">
+        <Button
+          variant="success"
+          className="m-2"
+          onClick={() => setShowCompleteModal(true)}
+          disabled={selectedRental.status === "Completed"}
+        >
+          Complete Rental
+        </Button>
+        <Button
+          variant="danger"
+          onClick={() => setShowDeleteModal(true)}
+        >
+          Delete Rental
+        </Button>
+      </div>
+
+      {/* Complete Rental Modal */}
+      <Modal show={showCompleteModal} onHide={() => setShowCompleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Complete Rental</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to complete this rental?</p>
+          <div className="mb-3">
+            <label htmlFor="odometerAfter" className="form-label">Final Odometer Reading:</label>
+            <input
+              type="number"
+              id="odometerAfter"
+              className="form-control"
+              value={odometerAfter}
+              onChange={(e) => setOdometerAfter(e.target.value)}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowCompleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleComplete}>
+            Complete Rental
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Rental Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Rental</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this rental? This action cannot be undone.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete Rental
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

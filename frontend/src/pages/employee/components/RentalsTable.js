@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import NewRentalModal from "./NewRentalModal";
 
-const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName, formatDateRange, onAddRental }) => {
+const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName, formatDateRange, fetchRentals }) => {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -50,7 +50,7 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
       <NewRentalModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        onAddRental={onAddRental}
+        fetchRentals={fetchRentals}
       />
     </div>
   );

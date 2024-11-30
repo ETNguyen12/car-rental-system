@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from . import employee_bp
 from flask import request, jsonify
 from sqlalchemy import text
@@ -39,7 +39,7 @@ def get_rentals():
 @employee_bp.route('/vehicles/update_odometer', methods=['PUT'])
 def update_vehicle_odometer():
     try:
-        # Perform the update query
+        # Update vehicles' odometer_reading based on the maximum odometer_after from rentals
         db.session.execute(
             text("""
                 UPDATE vehicles
@@ -54,8 +54,22 @@ def update_vehicle_odometer():
                 )
             """)
         )
+
+        # Update rentals' odometer_before for ongoing rentals
+        db.session.execute(
+            text("""
+                UPDATE rentals
+                SET odometer_before = (
+                    SELECT v.odometer_reading
+                    FROM vehicles v
+                    WHERE rentals.vehicle_id = v.id
+                )
+                WHERE rentals.status = 'Ongoing'
+            """)
+        )
+
         db.session.commit()
-        return jsonify({"message": "Vehicle odometer values updated successfully"}), 200
+        return jsonify({"message": "Vehicle odometer values and ongoing rentals updated successfully"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -72,10 +86,11 @@ def get_customers():
                 email,
                 phone_number
             FROM users
-            WHERE LOWER(first_name || ' ' || last_name) LIKE :search_query
+            WHERE role = 'Customer'
+            AND LOWER(first_name || ' ' || last_name) LIKE :search_query
         """),
         {'search_query': f'%{search_query}%'}
-    ).fetchall()
+    ).fetchall()    
 
     return jsonify([dict(row._mapping) for row in customers]), 200
 
@@ -121,7 +136,14 @@ def create_new_rental():
         return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
     try:
-        # Use timezone-aware datetimes for UTC
+        vehicle_query = db.session.execute(
+            text("SELECT odometer_reading FROM vehicles WHERE id = :vehicle_id"),
+            {'vehicle_id': int(data['vehicle_id'])}
+        )
+        vehicle_data = vehicle_query.fetchone()
+
+        odometer_before = vehicle_data[0]  
+        print(odometer_before)
         current_utc_time = datetime.now(timezone.utc)
 
         # Insert the new rental into the database
@@ -142,8 +164,8 @@ def create_new_rental():
                 'vehicle_id': data['vehicle_id'],
                 'pickup_date': data['pickup_date'],
                 'dropoff_date': data['dropoff_date'],
-                'odometer_before': data.get('odometer_before', 0),
-                'odometer_after': data.get('odometer_after'),
+                'odometer_before': odometer_before,
+                'odometer_after': data['odometer_after'],
                 'total_price': data.get('total_price', 0),
                 'status': data['status'],
                 'created_at': current_utc_time,
@@ -153,6 +175,49 @@ def create_new_rental():
         db.session.commit()
 
         return jsonify({"message": "Rental created successfully"}), 201
+
+    except Exception as e:
+        print(f"Database Error: {e}") 
+        return jsonify({"error": "Failed to create rental", "details": str(e)}), 500
+    
+
+@employee_bp.route('/rentals/<int:rental_id>/complete', methods=['PUT'])
+def complete_rental(rental_id):
+    data = request.json
+    if 'odometer_after' not in data:
+        return jsonify({"error": "odometer_after is required"}), 400
+
+    try:
+        db.session.execute(
+            text("""
+                UPDATE rentals
+                SET status = 'Completed', odometer_after = :odometer_after, last_updated_at = :last_updated_at
+                WHERE id = :rental_id
+            """),
+            {
+                'odometer_after': data['odometer_after'],
+                'last_updated_at': datetime.now(timezone.utc),
+                'rental_id': rental_id,
+            }
+        )
+        db.session.commit()
+        return jsonify({"message": "Rental completed successfully"}), 200
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Failed to complete rental", "details": str(e)}), 500
+
+
+@employee_bp.route('/rentals/<int:rental_id>', methods=['DELETE'])
+def delete_rental(rental_id):
+    try:
+        db.session.execute(
+            text("DELETE FROM rentals WHERE id = :rental_id"),
+            {'rental_id': rental_id}
+        )
+        db.session.commit()
+        return jsonify({"message": "Rental deleted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete rental", "details": str(e)}), 500
