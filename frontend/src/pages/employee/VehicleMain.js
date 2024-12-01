@@ -21,6 +21,15 @@ function VehicleMain() {
     }
   };
 
+  const updateVehicleOdometers = async () => {
+    try {
+      await api.put("/employee/vehicles/update_odometer");
+      console.log("Vehicle odometer values updated successfully");
+    } catch (error) {
+      console.error("Error updating vehicle odometer values:", error);
+    }
+  };
+
   const onSaveVehicle = async (newVehicle) => {
     try {
       const response = await api.post("/employee/vehicles/create", newVehicle);
@@ -37,6 +46,7 @@ function VehicleMain() {
   };
 
   useEffect(() => {
+    updateVehicleOdometers(); 
     fetchVehicles();
   }, []);
 

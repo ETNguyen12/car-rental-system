@@ -57,7 +57,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
   const handleSave = () => {
     if (validateSection()) {
       onSave(formData);
-      handleModalClose(); // Clear form data and close modal
+      handleModalClose(); 
     }
   };
 

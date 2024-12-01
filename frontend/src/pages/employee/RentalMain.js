@@ -77,8 +77,8 @@ function RentalMain() {
 
   useEffect(() => {
     const initializeData = async () => {
-      await updateVehicleOdometers();
       await updateRentalStatus();
+      await updateVehicleOdometers(); 
       await fetchRentals();
     };
 

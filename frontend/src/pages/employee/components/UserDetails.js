@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
 
-const UserDetails = ({ selectedUser, formatDate }) => {
+const UserDetails = ({ selectedUser, formatDate, onDeleteUser }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   if (!selectedUser) {
     return (
       <>
@@ -13,6 +16,11 @@ const UserDetails = ({ selectedUser, formatDate }) => {
   const formatAddress = (user) => {
     const addressLine2 = user.address_line2 ? `${user.address_line2}\n` : "";
     return `${user.address_line1}\n${addressLine2}${user.city}, ${user.state} ${user.zip_code}`;
+  };
+
+  const handleDeleteUser = () => {
+    onDeleteUser(selectedUser.id);
+    setShowDeleteModal(false);
   };
 
   return (
@@ -60,6 +68,35 @@ const UserDetails = ({ selectedUser, formatDate }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Action Buttons */}
+      <div className="text-center">
+        <Button
+          variant="danger"
+          className="m-2"
+          onClick={() => setShowDeleteModal(true)}
+        >
+          ✗
+        </Button>
+      </div>
+
+      {/* Delete User Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteUser}>
+            Delete User
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
