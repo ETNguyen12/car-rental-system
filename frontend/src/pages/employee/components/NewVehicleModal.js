@@ -22,6 +22,22 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
     status: "Available", // Default to "Available"
   });
 
+  const vehicleTypes = [
+    "Sedan",
+    "SUV",
+    "Mini Van",
+    "Van",
+    "Truck",
+    "Other",
+  ];
+
+  const fuelTypes = [
+    "Gasoline",
+    "Diesel",
+    "Electric",
+    "Hybrid",
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -57,7 +73,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
   const handleSave = () => {
     if (validateSection()) {
       onSave(formData);
-      handleModalClose(); 
+      handleModalClose();
     }
   };
 
@@ -114,12 +130,21 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
                       Type <span className="text-danger">*</span>
                     </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="type"
                       value={formData.type}
                       onChange={handleChange}
                       required
-                    />
+                    >
+                      <option value="" disabled>
+                        Select Vehicle Type
+                      </option>
+                      {vehicleTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
                 </Col>
               </Row>
@@ -205,12 +230,21 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
                       Fuel Type <span className="text-danger">*</span>
                     </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="fuel"
                       value={formData.fuel}
                       onChange={handleChange}
                       required
-                    />
+                    >
+                      <option value="" disabled>
+                        Select Fuel Type
+                      </option>
+                      {fuelTypes.map((fuel) => (
+                        <option key={fuel} value={fuel}>
+                          {fuel}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
                 </Col>
                 <Col md={6}>

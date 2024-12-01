@@ -476,7 +476,7 @@ def get_rentals_by_customer():
             text("""
                 SELECT 
                     r.id, 
-                    v.make || ' ' || v.model AS vehicle, 
+                    v.year || ' ' || v.make || ' ' || v.model AS vehicle, 
                     r.pickup_date, 
                     r.dropoff_date 
                 FROM 

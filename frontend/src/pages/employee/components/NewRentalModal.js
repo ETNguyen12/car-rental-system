@@ -118,7 +118,7 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
     const days =
       (new Date(newRental.dropoff_date) - new Date(newRental.pickup_date)) /
       (1000 * 60 * 60 * 24);
-    const totalPrice = days * selectedVehicle.daily_rental_rate;
+    const totalPrice = 1.0725 * days * selectedVehicle.daily_rental_rate;
     setNewRental((prev) => ({
       ...prev,
       vehicle_id: vehicleId,
@@ -284,7 +284,7 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
                   !newRental.vehicle_id ? "hidden-total-price" : ""
                 }`}
               >
-                <label className="form-label">Total Price</label>
+                <label className="form-label">Total Price (Tax Included)</label>
                 <input
                   type="text"
                   className="form-control"

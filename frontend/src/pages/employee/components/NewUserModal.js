@@ -55,12 +55,11 @@ const NewUserModal = ({ show, onClose, onSave }) => {
   const handleSave = () => {
     if (validateSection()) {
       onSave(formData);
-      handleModalClose(); // Clear form data and close modal
+      handleModalClose(); 
     }
   };
 
   const handleModalClose = () => {
-    // Clear form data and reset section before closing the modal
     setFormData({
       first_name: "",
       last_name: "",
@@ -75,7 +74,7 @@ const NewUserModal = ({ show, onClose, onSave }) => {
       license_number: "",
       policy_number: "",
     });
-    setCurrentSection(1); // Reset to the first section
+    setCurrentSection(1); 
     onClose();
   };
 
@@ -193,12 +192,27 @@ const NewUserModal = ({ show, onClose, onSave }) => {
                       State <span className="text-danger">*</span>
                     </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
                       required
-                    />
+                    >
+                      <option value="" disabled>
+                        Select
+                      </option>
+                      {[
+                        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+                        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+                        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+                        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+                        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+                      ].map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
                 </Col>
                 <Col md={3}>

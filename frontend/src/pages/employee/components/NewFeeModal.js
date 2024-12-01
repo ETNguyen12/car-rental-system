@@ -17,6 +17,11 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     due_date: "",
   });
 
+  const feeTypes = [
+    "Damage", 
+    "Late", 
+    "Cleaning"
+  ];
   const [customerSearch, setCustomerSearch] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -117,7 +122,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
         setRentals([]);
         setCurrentStep(1);
         fetchFees();
-        onClose(); 
+        onClose();
       } else {
         toast.error(response.data.error || "Failed to create fee.");
       }
@@ -221,13 +226,21 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
 
               <div className="mb-3">
                 <label className="form-label">Type</label>
-                <input
-                  type="text"
+                <select
                   className="form-control"
                   name="type"
                   value={newFee.type}
                   onChange={(e) => setNewFee({ ...newFee, type: e.target.value })}
-                />
+                >
+                  <option value="" disabled hidden>
+                    Select Fee Type
+                  </option>
+                  {feeTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="mb-3">
                 <label className="form-label">Description</label>
