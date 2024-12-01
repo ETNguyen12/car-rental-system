@@ -306,6 +306,7 @@ def get_rental_fees():
             SELECT 
                 rf.id,
                 rf.rental_id,
+                rf.description,
                 rf.type,
                 rf.amount,
                 rf.status,

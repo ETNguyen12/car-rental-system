@@ -11,7 +11,7 @@ const Navbar = () => {
         <img src="https://static.thenounproject.com/png/386502-200.png" alt="logo" style={{width: '50px', height: '50px', margin: '10px 0px'}}></img>
       </div>
       <ul className="nav flex-column">
-        <Link to="/employee" className="btn btn-link nav-link">
+        <Link to="/employee/rentals" className="btn btn-link nav-link">
           Rentals
         </Link>
         <Link to="/employee/fees" className="btn btn-link nav-link">
