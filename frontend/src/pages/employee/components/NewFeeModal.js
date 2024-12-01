@@ -52,12 +52,13 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
           setRentals(response.data);
         } catch (error) {
           console.error("Error fetching rentals:", error);
+          toast.error("Failed to fetch rentals for the selected customer.");
         }
       };
-
+  
       fetchRentals();
     }
-  }, [currentStep, newFee.customer_id]);
+  }, [currentStep, newFee.customer_id]);  
 
   const handleCustomerSearch = (e) => {
     const value = e.target.value;
@@ -70,7 +71,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   };
 
   const handleCustomerSelect = (customer) => {
-    console.log(customer);
     setNewFee((prev) => ({
       ...prev,
       customer_id: customer.id,
@@ -78,7 +78,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     }));
     setShowDropdown(false);
     setCustomerSearch(customer.name);
-  };
+  };  
 
   const handleRentalSelect = (e) => {
     setNewFee((prev) => ({ ...prev, rental_id: e.target.value }));
@@ -142,6 +142,17 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+  
+    const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, "0"); 
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); 
+    const year = date.getUTCFullYear();
+  
+    return `${month}/${day}/${year}`;
+  };
+
   return (
     <>
       <ToastContainer />
@@ -193,11 +204,17 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
                   <option value="" disabled hidden>
                     Select Rental
                   </option>
-                  {rentals.map((rental) => (
-                    <option key={rental.id} value={rental.id}>
-                      Rental #{rental.id} ({rental.vehicle})
+                  {rentals.length > 0 ? (
+                    rentals.map((rental) => (
+                      <option key={rental.id} value={rental.id}>
+                        {rental.vehicle} ({formatDate(rental.pickup_date)} - {formatDate(rental.dropoff_date)})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No rentals found for this customer.
                     </option>
-                  ))}
+                  )}
                 </select>
               </div>
 

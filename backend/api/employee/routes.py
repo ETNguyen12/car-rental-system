@@ -528,20 +528,37 @@ def get_rentals_by_customer():
         return jsonify({"error": "customer_id is required"}), 400
 
     try:
+        # Fetch rentals for the given customer_id
         rentals = db.session.execute(
-            text("SELECT id, vehicle, pickup_date, dropoff_date FROM rentals WHERE customer_id = :customer_id"),
+            text("""
+                SELECT 
+                    r.id, 
+                    v.make || ' ' || v.model AS vehicle, 
+                    r.pickup_date, 
+                    r.dropoff_date 
+                FROM 
+                    rentals r
+                JOIN 
+                    vehicles v ON r.vehicle_id = v.id
+                WHERE 
+                    r.status = 'Completed' AND
+                    r.customer_id = :customer_id
+            """),
             {"customer_id": customer_id}
         ).fetchall()
 
+        # Transform results into a list of dictionaries
         rentals_list = [
             {
                 "id": rental.id,
                 "vehicle": rental.vehicle,
-                "pickup_date": rental.pickup_date,
-                "dropoff_date": rental.dropoff_date,
+                "pickup_date": rental.pickup_date.isoformat() if rental.pickup_date else None,
+                "dropoff_date": rental.dropoff_date.isoformat() if rental.dropoff_date else None,
             }
             for rental in rentals
         ]
+
         return jsonify(rentals_list), 200
+
     except Exception as e:
-        return jsonify({"error": "An error occurred", "details": str(e)}), 500
+        return jsonify({"error": "An error occurred while fetching rentals", "details": str(e)}), 500
