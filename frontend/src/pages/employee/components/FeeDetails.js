@@ -1,4 +1,5 @@
 import React from "react";
+import StatusBadge from "./StatusBadge";
 
 const FeeDetails = ({ selectedFee, formatCurrency, formatDate }) => {
   if (!selectedFee) {
@@ -19,7 +20,7 @@ const FeeDetails = ({ selectedFee, formatCurrency, formatDate }) => {
           <tbody>
             <tr>
               <td><strong>Name:</strong></td>
-              <td>{selectedFee.customer_name}</td>
+              <td>{selectedFee.name}</td>
             </tr>
             <tr>
               <td><strong>Email:</strong></td>
@@ -36,10 +37,6 @@ const FeeDetails = ({ selectedFee, formatCurrency, formatDate }) => {
         <h6 className="text-primary">Fee Information</h6>
         <table className="table table-bordered">
             <tbody>
-            <tr>
-                <td><strong>Name:</strong></td>
-                <td>{selectedFee.name}</td>
-            </tr>
             <tr>
                 <td><strong>Type:</strong></td>
                 <td>{selectedFee.type}</td>
@@ -58,7 +55,7 @@ const FeeDetails = ({ selectedFee, formatCurrency, formatDate }) => {
             </tr>
             <tr>
                 <td><strong>Status:</strong></td>
-                <td>{selectedFee.status}</td>
+                <td><StatusBadge status={selectedFee.status} /></td>
             </tr>
             </tbody>
         </table>

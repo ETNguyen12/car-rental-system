@@ -383,3 +383,35 @@ def get_vehicles():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@employee_bp.route('/users/info', methods=['GET'])
+def get_users():
+    try:
+        query = """
+            SELECT 
+                u.id,
+                u.first_name || ' ' || u.last_name AS name,
+                u.email,
+                u.phone_number,
+                cd.license_number,
+                cd.policy_number,
+                cd.address_line1,
+                cd.address_line2,
+                cd.city,
+                cd.state,
+                cd.zip_code,
+                cd.birth_date,
+                (
+                    SELECT MAX(r.dropoff_date) 
+                    FROM rentals r
+                    WHERE r.customer_id = u.id
+                ) AS last_rental
+            FROM users u
+            LEFT JOIN customer_details cd ON u.id = cd.customer_id
+            WHERE u.role = 'Customer'
+            ORDER BY u.id ASC
+        """
+        users = db.session.execute(text(query)).fetchall()
+        return jsonify([dict(row._mapping) for row in users]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

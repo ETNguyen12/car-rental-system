@@ -1,4 +1,5 @@
 import React from "react";
+import StatusBadge from "./StatusBadge";
 
 const VehicleDetails = ({ selectedVehicle }) => {
   if (!selectedVehicle) {
@@ -16,12 +17,8 @@ const VehicleDetails = ({ selectedVehicle }) => {
       <table className="table table-bordered">
         <tbody>
           <tr>
-            <td><strong>Model:</strong></td>
+            <td><strong>Specification:</strong></td>
             <td>{selectedVehicle.model}</td>
-          </tr>
-          <tr>
-            <td><strong>Year:</strong></td>
-            <td>{selectedVehicle.year}</td>
           </tr>
           <tr>
             <td><strong>Color:</strong></td>
@@ -32,7 +29,7 @@ const VehicleDetails = ({ selectedVehicle }) => {
             <td>{selectedVehicle.fuel}</td>
           </tr>
           <tr>
-            <td><strong>Odometer Reading:</strong></td>
+            <td><strong>Odometer:</strong></td>
             <td>{selectedVehicle.odometer_reading}</td>
           </tr>
           <tr>
@@ -40,8 +37,12 @@ const VehicleDetails = ({ selectedVehicle }) => {
             <td>{selectedVehicle.vin}</td>
           </tr>
           <tr>
-            <td><strong>Daily Rental Rate:</strong></td>
+            <td><strong>Daily Rate:</strong></td>
             <td>${selectedVehicle.daily_rental_rate}</td>
+          </tr>
+          <tr>
+            <td><strong>Status:</strong></td>
+            <td><StatusBadge status={selectedVehicle.status}/></td>
           </tr>
         </tbody>
       </table>

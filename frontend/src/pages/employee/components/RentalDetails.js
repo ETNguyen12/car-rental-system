@@ -110,7 +110,7 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
               <td>{selectedRental.seat_capacity || "N/A"}</td>
             </tr>
             <tr>
-              <td><strong>Daily Rental Rate:</strong></td>
+              <td><strong>Daily Rate:</strong></td>
               <td>{selectedRental.daily_rental_rate || "N/A"}</td>
             </tr>
           </tbody>
@@ -123,7 +123,7 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
           variant="success"
           className="m-2"
           onClick={() => setShowCompleteModal(true)}
-          disabled={selectedRental.status === "Completed"}
+          disabled={selectedRental.status != "Ongoing"}
         >
           ✓
         </Button>

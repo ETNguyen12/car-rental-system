@@ -5,7 +5,7 @@ const FeesTable = ({ fees, selectedFee, onRowClick, formatCurrency, formatDate }
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">
-        <h4 className="table-name">Rental Fees</h4>
+        <h4 className="table-name m-0">Rental Fees</h4>
       </div>
       <div className="table-responsive">
         <table className="table table-bordered">

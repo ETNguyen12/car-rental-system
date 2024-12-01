@@ -5,6 +5,9 @@ const StatusBadge = ({ status }) => {
     "Unpaid": "bg-danger text-white",
     "Ongoing": "bg-info",
     "Paid": "bg-success",
+    "Available": "bg-success",
+    "Unavailable": "bg-danger",
+    "Maintenance": "bg-warning",
     "Reserved": "bg-success",
   }[status] || "bg-secondary";
 
