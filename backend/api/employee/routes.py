@@ -538,7 +538,7 @@ def get_rentals_by_customer():
         return jsonify({"error": "An error occurred while fetching rentals", "details": str(e)}), 500
 
 
-@employee_bp.route('/fees/create', methods=['POST'])
+@employee_bp.route('/rental-fees/create', methods=['POST'])
 def create_rental_fee():
     try:
         data = request.json
@@ -553,8 +553,8 @@ def create_rental_fee():
 
         db.session.execute(
             text("""
-                INSERT INTO rental_fees (rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
-                VALUES (:rental_id, :type, :description, :amount, :status, :due_date, NOW(), NOW())
+                INSERT INTO rental_fees (id, rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
+                VALUES (:id, :rental_id, :type, :description, :amount, :status, :due_date, NOW(), NOW())
             """),
             {
                 'id': next_id,

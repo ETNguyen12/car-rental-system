@@ -162,6 +162,7 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental, onCon
         )}
       </div>
 
+
       {/* Complete Rental Modal */}
       <Modal show={showCompleteModal} onHide={() => setShowCompleteModal(false)}>
         <Modal.Header closeButton>
@@ -176,15 +177,32 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental, onCon
               id="odometerAfter"
               className="form-control"
               value={odometerAfter}
-              onChange={(e) => setOdometerAfter(e.target.value)}
+              onChange={(e) => setOdometerAfter(Number(e.target.value))}
+              min={selectedRental.odometer_before + 1}
+              required
             />
+            {odometerAfter <= selectedRental.odometer_before && odometerAfter !== "" && (
+              <small className="text-danger">
+                Odometer reading must be greater than {selectedRental.odometer_before}.
+              </small>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCompleteModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowCompleteModal(false);
+              setOdometerAfter("");
+            }}
+          >
             Cancel
           </Button>
-          <Button variant="success" onClick={handleComplete}>
+          <Button
+            variant="success"
+            onClick={handleComplete}
+            disabled={!odometerAfter || odometerAfter <= selectedRental.odometer_before}
+          >
             Complete Rental
           </Button>
         </Modal.Footer>

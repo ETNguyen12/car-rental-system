@@ -4,9 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { Modal, Button } from "react-bootstrap";
 
 const NewFeeModal = ({ show, onClose, fetchFees }) => {
-  const [customers, setCustomers] = useState([]);
-  const [rentals, setRentals] = useState([]);
-  const [newFee, setNewFee] = useState({
+  const initialFeeState = {
     rental_id: "",
     customer_id: "",
     customer_name: "",
@@ -15,12 +13,16 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     amount: "",
     status: "Unpaid",
     due_date: "",
-  });
+  };
+  const [customers, setCustomers] = useState([]);
+  const [rentals, setRentals] = useState([]);
+  const [newFee, setNewFee] = useState(initialFeeState);
 
   const feeTypes = [
     "Damage", 
     "Late", 
-    "Cleaning"
+    "Cleaning",
+    "Fuel"
   ];
   const [customerSearch, setCustomerSearch] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
@@ -30,6 +32,16 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split("T")[0];
+  };
+
+  const handleCloseModal = () => {
+    setNewFee(initialFeeState); 
+    setCustomerSearch("");
+    setCustomers([]);
+    setRentals([]);
+    setCurrentStep(1);
+    setShowDropdown(false);
+    onClose();
   };
 
   useEffect(() => {
@@ -111,23 +123,14 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     };
 
     try {
-      const response = await api.post("/employee/fees/create", payload);
+      const response = await api.post("/employee/rental-fees/create", payload);
       if (response.status === 201) {
         toast.success("Fee created successfully!", {
           position: "top-right",
           autoClose: 3000,
         });
 
-        setNewFee({
-          rental_id: "",
-          customer_id: "",
-          customer_name: "",
-          type: "",
-          description: "",
-          amount: "",
-          status: "Unpaid",
-          due_date: "",
-        });
+        setNewFee(initialFeeState);
         setCustomerSearch("");
         setCustomers([]);
         setRentals([]);
@@ -173,7 +176,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   return (
     <>
       <ToastContainer />
-      <Modal show={show} onHide={onClose} centered size="lg">
+      <Modal show={show} onHide={handleCloseModal} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Add New Fee</Modal.Title>
         </Modal.Header>

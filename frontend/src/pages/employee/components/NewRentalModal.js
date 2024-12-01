@@ -2,28 +2,39 @@ import React, { useState, useEffect } from "react";
 import api from "../../../services/api";
 import { toast, ToastContainer } from "react-toastify";
 import { Modal, Button } from "react-bootstrap";
-import NewUserModal from "./NewUserModal"; 
+import NewUserModal from "./NewUserModal";
 
 const NewRentalModal = ({ show, onClose, fetchRentals }) => {
-  const [customers, setCustomers] = useState([]);
-  const [availableVehicles, setAvailableVehicles] = useState([]);
-  const [newRental, setNewRental] = useState({
-    customer_id: "",
-    customer_name: "",
-    vehicle_id: "",
-    pickup_date: "",
-    dropoff_date: "",
-    odometer_before: 0,
-    odometer_after: null,
-    total_price: 0,
-    status: "Unpaid",
-  });
+    const initialRentalState = {
+      customer_id: "",
+      customer_name: "",
+      vehicle_id: "",
+      pickup_date: "",
+      dropoff_date: "",
+      odometer_before: 0,
+      odometer_after: null,
+      total_price: 0,
+      status: "Unpaid",
+    };
 
-  const [customerSearch, setCustomerSearch] = useState("");
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [noVehiclesMessage, setNoVehiclesMessage] = useState(false);
-  const [showNewUserModal, setShowNewUserModal] = useState(false); 
+    const [customers, setCustomers] = useState([]);
+    const [availableVehicles, setAvailableVehicles] = useState([]);
+    const [newRental, setNewRental] = useState(initialRentalState);
+    const [customerSearch, setCustomerSearch] = useState("");
+    const [currentStep, setCurrentStep] = useState(1);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [noVehiclesMessage, setNoVehiclesMessage] = useState(false);
+    const [showNewUserModal, setShowNewUserModal] = useState(false);
+
+    const handleCloseModal = () => {
+      setNewRental(initialRentalState);
+      setCustomerSearch("");
+      setCustomers([]);
+      setAvailableVehicles([]);
+      setNoVehiclesMessage(false);
+      setCurrentStep(1);
+      onClose();
+    };
 
   const getTodayDate = () => {
     const today = new Date();
@@ -215,7 +226,7 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
   return (
     <>
       <ToastContainer />
-      <Modal show={show} onHide={onClose} centered size="lg">
+      <Modal show={show} onHide={handleCloseModal} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Add New Rental</Modal.Title>
         </Modal.Header>
