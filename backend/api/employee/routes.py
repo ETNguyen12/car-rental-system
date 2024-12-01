@@ -366,17 +366,28 @@ def get_vehicles():
     try:
         query = """
             SELECT 
-                id,
-                year || ' ' || make || ' ' || model AS model,
-                type,
-                vin,
-                color,
-                fuel,
-                odometer_reading,
-                daily_rental_rate,
-                status
-            FROM vehicles
-            ORDER BY id ASC
+                v.id,
+                v.year || ' ' || v.make || ' ' || v.model AS model,
+                v.type,
+                v.vin,
+                v.color,
+                v.fuel,
+                v.odometer_reading,
+                v.daily_rental_rate,
+                v.status,
+                COALESCE((
+                    SELECT COUNT(r.id)
+                    FROM rentals r
+                    WHERE r.vehicle_id = v.id
+                ), 0) AS total_rentals,
+                COALESCE((
+                    SELECT SUM(r.total_price)
+                    FROM rentals r
+                    WHERE r.vehicle_id = v.id
+                    AND r.status = 'Completed'
+                ), 0) AS total_revenue
+            FROM vehicles v
+            ORDER BY v.id ASC
         """
         vehicles = db.session.execute(text(query)).fetchall()
         return jsonify([dict(row._mapping) for row in vehicles]), 200

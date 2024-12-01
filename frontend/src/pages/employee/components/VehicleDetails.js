@@ -74,32 +74,12 @@ const VehicleDetails = ({ selectedVehicle, onScheduleMaintenance, onDeleteVehicl
         <table className="table table-bordered">
           <tbody>
             <tr>
-              <td><strong>Specification:</strong></td>
-              <td>{selectedVehicle.model}</td>
+              <td><strong>Total Revenue:</strong></td>
+              <td>${selectedVehicle.total_revenue}</td>
             </tr>
             <tr>
-              <td><strong>Color:</strong></td>
-              <td>{selectedVehicle.color}</td>
-            </tr>
-            <tr>
-              <td><strong>Fuel:</strong></td>
-              <td>{selectedVehicle.fuel}</td>
-            </tr>
-            <tr>
-              <td><strong>Odometer:</strong></td>
-              <td>{selectedVehicle.odometer_reading.toLocaleString()}</td>
-            </tr>
-            <tr>
-              <td><strong>VIN:</strong></td>
-              <td>{selectedVehicle.vin}</td>
-            </tr>
-            <tr>
-              <td><strong>Daily Rate:</strong></td>
-              <td>${selectedVehicle.daily_rental_rate}</td>
-            </tr>
-            <tr>
-              <td><strong>Status:</strong></td>
-              <td><StatusBadge status={selectedVehicle.status} /></td>
+              <td><strong>Total Rentals:</strong></td>
+              <td>{selectedVehicle.total_rentals}</td>
             </tr>
           </tbody>
         </table>
