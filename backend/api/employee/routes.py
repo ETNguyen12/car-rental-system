@@ -519,3 +519,29 @@ def create_vehicle():
     except Exception as e:
         db.session.rollback()
         return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500
+    
+    
+@employee_bp.route('/rentals', methods=['GET'])
+def get_rentals_by_customer():
+    customer_id = request.args.get('customer_id')
+    if not customer_id:
+        return jsonify({"error": "customer_id is required"}), 400
+
+    try:
+        rentals = db.session.execute(
+            text("SELECT id, vehicle, pickup_date, dropoff_date FROM rentals WHERE customer_id = :customer_id"),
+            {"customer_id": customer_id}
+        ).fetchall()
+
+        rentals_list = [
+            {
+                "id": rental.id,
+                "vehicle": rental.vehicle,
+                "pickup_date": rental.pickup_date,
+                "dropoff_date": rental.dropoff_date,
+            }
+            for rental in rentals
+        ]
+        return jsonify(rentals_list), 200
+    except Exception as e:
+        return jsonify({"error": "An error occurred", "details": str(e)}), 500

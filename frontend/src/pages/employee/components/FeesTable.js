@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import FilterIcon from "../../../assets/filter.png"; // Ensure the path is correct
+import NewFeeModal from "./NewFeeModal";
 
 const FeesTable = ({
   fees,
@@ -9,10 +10,10 @@ const FeesTable = ({
   formatCurrency,
   formatDate,
   fetchFees,
-  onAddFee,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterActive, setFilterActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Filter fees based on search query and filter state
   const filteredFees = fees.filter((fee) => {
@@ -20,6 +21,14 @@ const FeesTable = ({
     const matchesFilter = !filterActive || fee.status !== "Paid"; 
     return matchesSearch && matchesFilter;
   });
+
+  const handleAddFee = () => setShowModal(true);
+
+  const handleSaveFee = (feeData) => {
+    // Call API to save the fee
+    fetchFees(); // Refresh the fee list
+    setShowModal(false); // Close the modal
+  };
 
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
@@ -77,10 +86,7 @@ const FeesTable = ({
           </div>
 
           {/* Add Button */}
-          <button
-            className="btn rounded-circle"
-            onClick={onAddFee}
-          >
+          <button className="btn rounded-circle" onClick={handleAddFee}>
             +
           </button>
         </div>
@@ -125,6 +131,13 @@ const FeesTable = ({
           </tbody>
         </table>
       </div>
+
+      {/* New Fee Modal */}
+      <NewFeeModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        fetchFees={fetchFees}
+      />
     </div>
   );
 };

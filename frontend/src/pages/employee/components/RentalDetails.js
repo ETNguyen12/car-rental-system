@@ -128,30 +128,38 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental, onCon
 
       {/* Action Buttons */}
       <div className="text-center">
-        <Button
-          variant="success"
-          className="m-2"
-          onClick={() => setShowCompleteModal(true)}
-          disabled={selectedRental.status !== "Ongoing"}
-        >
-          ✓
-        </Button>
-        <Button
-          variant="danger"
-          className="m-2"
-          onClick={() => setShowDeleteModal(true)}
-          disabled={selectedRental.status === "Completed" || selectedRental.status === "Ongoing"}
-        >
-          ✗
-        </Button>
-        <Button
-          variant="info"
-          className="m-2"
-          onClick={() => setShowPaymentModal(true)}
-          disabled={selectedRental.status !== "Unpaid"}
-        >
-          💲
-        </Button>
+        {/* Complete Rental Button */}
+        {selectedRental.status === "Ongoing" && (
+          <Button
+            variant="success"
+            className="m-2"
+            onClick={() => setShowCompleteModal(true)}
+          >
+            ✓
+          </Button>
+        )}
+
+        {/* Delete Rental Button */}
+        {selectedRental.status !== "Completed" && selectedRental.status !== "Ongoing" && (
+          <Button
+            variant="danger"
+            className="m-2"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            ✗
+          </Button>
+        )}
+
+        {/* Confirm Payment Button */}
+        {selectedRental.status === "Unpaid" && (
+          <Button
+            variant="info"
+            className="m-2"
+            onClick={() => setShowPaymentModal(true)}
+          >
+            💲
+          </Button>
+        )}
       </div>
 
       {/* Complete Rental Modal */}

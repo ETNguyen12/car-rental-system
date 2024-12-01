@@ -8,6 +8,8 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   const [rentals, setRentals] = useState([]);
   const [newFee, setNewFee] = useState({
     rental_id: "",
+    customer_id: "",
+    customer_name: "",
     type: "",
     description: "",
     amount: "",
@@ -20,7 +22,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    if (newFee.rental_id) return;
+    if (newFee.customer_id) return;
 
     const fetchCustomers = async () => {
       try {
@@ -40,7 +42,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
       setCustomers([]);
       setShowDropdown(false);
     }
-  }, [customerSearch, newFee.rental_id]);
+  }, [customerSearch, newFee.customer_id]);
 
   useEffect(() => {
     if (currentStep === 2 && newFee.customer_id) {
@@ -60,13 +62,19 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   const handleCustomerSearch = (e) => {
     const value = e.target.value;
     setCustomerSearch(value);
-    setNewFee((prev) => ({ ...prev, customer_id: "", rental_id: "" }));
+    setNewFee((prev) => ({
+      ...prev,
+      customer_id: "",
+      customer_name: "",
+    }));
   };
 
   const handleCustomerSelect = (customer) => {
+    console.log(customer);
     setNewFee((prev) => ({
       ...prev,
       customer_id: customer.id,
+      customer_name: customer.name,
     }));
     setShowDropdown(false);
     setCustomerSearch(customer.name);
@@ -77,8 +85,17 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   };
 
   const handleAddFee = async () => {
+    const payload = {
+      rental_id: newFee.rental_id,
+      type: newFee.type,
+      description: newFee.description,
+      amount: parseFloat(newFee.amount),
+      status: newFee.status,
+      due_date: newFee.due_date,
+    };
+
     try {
-      const response = await api.post("/employee/fees/create", newFee);
+      const response = await api.post("/employee/fees/create", payload);
       if (response.status === 201) {
         onClose();
         fetchFees();
@@ -90,6 +107,8 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
 
         setNewFee({
           rental_id: "",
+          customer_id: "",
+          customer_name: "",
           type: "",
           description: "",
           amount: "",
