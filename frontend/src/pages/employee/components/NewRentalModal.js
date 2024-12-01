@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../../services/api";
 import { toast, ToastContainer } from "react-toastify";
 import { Modal, Button } from "react-bootstrap";
+import NewUserModal from "./NewUserModal"; 
 
 const NewRentalModal = ({ show, onClose, fetchRentals }) => {
   const [customers, setCustomers] = useState([]);
@@ -22,6 +23,7 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
   const [noVehiclesMessage, setNoVehiclesMessage] = useState(false);
+  const [showNewUserModal, setShowNewUserModal] = useState(false); 
 
   const getTodayDate = () => {
     const today = new Date();
@@ -187,6 +189,29 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
     }
   };
 
+  const onSaveUser = async (userData) => {
+    try {
+      const response = await api.post("/auth/customers/create", userData); 
+      if (response.status === 201) {
+        toast.success("User added successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving user:", error);
+      toast.error("Failed to save user.");
+    }
+  };
+
+  const handleNewUser = (newUserData) => {
+    onSaveUser(newUserData);
+    setShowNewUserModal(false);
+    setCustomerSearch(newUserData.name);
+    setNewRental((prev) => ({
+      ...prev,
+      customer_id: newUserData.id,
+      customer_name: newUserData.name,
+    }));
+  };
+
   return (
     <>
       <ToastContainer />
@@ -198,7 +223,17 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
           {currentStep === 1 && (
             <form>
               <div className="mb-3 position-relative">
-                <label className="form-label">Customer</label>
+                <label className="form-label">
+                  Customer{" "}
+                  <button
+                    type="button"
+                    className="btn btn-link p-0"
+                    style={{ fontSize: "0.9rem" }}
+                    onClick={() => setShowNewUserModal(true)}
+                  >
+                    New?
+                  </button>
+                </label>
                 <input
                   type="text"
                   className="form-control"
@@ -317,6 +352,12 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
           )}
         </Modal.Footer>
       </Modal>
+
+      <NewUserModal
+        show={showNewUserModal}
+        onClose={() => setShowNewUserModal(false)}
+        onSave={handleNewUser}
+      />
     </>
   );
 };
