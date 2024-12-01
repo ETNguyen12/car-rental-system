@@ -39,6 +39,7 @@ def get_rentals():
 def update_rental_status():
     try:
         current_date = datetime.now().date()
+        
         db.session.execute(
             text("""
                 UPDATE rentals
@@ -49,8 +50,22 @@ def update_rental_status():
             """),
             {"current_date": current_date}
         )
+
+        db.session.execute(
+            text("""
+                UPDATE vehicles
+                SET status = 'In Use'
+                WHERE id IN (
+                    SELECT DISTINCT vehicle_id
+                    FROM rentals
+                    WHERE status = 'Ongoing'
+                )
+            """)
+        )
+        
         db.session.commit()
-        return jsonify({"message": "Rental statuses updated successfully"}), 200
+        return jsonify({"message": "Rental and vehicle statuses updated successfully"}), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -239,8 +254,22 @@ def complete_rental(rental_id):
                 'rental_id': rental_id,
             }
         )
+
+        db.session.execute(
+            text("""
+                UPDATE vehicles
+                SET status = 'Available'
+                WHERE id = (
+                    SELECT vehicle_id
+                    FROM rentals
+                    WHERE id = :rental_id
+                )
+            """),
+            {'rental_id': rental_id}
+        )
+
         db.session.commit()
-        return jsonify({"message": "Rental completed successfully"}), 200
+        return jsonify({"message": "Rental completed and vehicle status updated successfully"}), 200
 
     except Exception as e:
         db.session.rollback()

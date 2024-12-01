@@ -30,7 +30,7 @@ CREATE TYPE "fuel_type" AS ENUM (
 CREATE TYPE "vehicle_status" AS ENUM (
   'Available',
   'Unavailable',
-  'Maintenance'
+  'In Use'
 );
 
 CREATE TYPE "statuses" AS ENUM (
