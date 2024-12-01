@@ -21,7 +21,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Fetch customers when searching
   useEffect(() => {
     if (newFee.customer_id) return;
 
@@ -45,7 +44,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     }
   }, [customerSearch, newFee.customer_id]);
 
-  // Fetch rentals when a customer is selected
   useEffect(() => {
     if (currentStep === 2 && newFee.customer_id) {
       const fetchRentals = async () => {
@@ -62,7 +60,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     }
   }, [currentStep, newFee.customer_id]);
 
-  // Handle customer search input
   const handleCustomerSearch = (e) => {
     const value = e.target.value;
     setCustomerSearch(value);
@@ -73,7 +70,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     }));
   };
 
-  // Handle customer selection
   const handleCustomerSelect = (customer) => {
     setNewFee((prev) => ({
       ...prev,
@@ -84,12 +80,10 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
     setCustomerSearch(customer.name);
   };
 
-  // Handle rental selection
   const handleRentalSelect = (e) => {
     setNewFee((prev) => ({ ...prev, rental_id: e.target.value }));
   };
 
-  // Handle adding a new fee
   const handleAddFee = async () => {
     const payload = {
       rental_id: newFee.rental_id,
@@ -108,7 +102,6 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
           autoClose: 3000,
         });
 
-        // Reset state and close modal
         setNewFee({
           rental_id: "",
           customer_id: "",
@@ -123,8 +116,8 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
         setCustomers([]);
         setRentals([]);
         setCurrentStep(1);
-        fetchFees(); // Refresh the fee list
-        onClose(); // Close the modal
+        fetchFees();
+        onClose(); 
       } else {
         toast.error(response.data.error || "Failed to create fee.");
       }

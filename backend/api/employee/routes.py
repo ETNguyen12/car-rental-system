@@ -164,7 +164,8 @@ def get_available_vehicles():
                 vehicles.vin,
                 vehicles.daily_rental_rate
             FROM vehicles
-            WHERE vehicles.id NOT IN (
+            WHERE vehicles.status = 'Available'
+            AND vehicles.id NOT IN (
                 SELECT vehicle_id
                 FROM rentals
                 WHERE 
@@ -515,7 +516,7 @@ def create_rental_fee():
         if missing_fields:
             return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
         
-        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM vehicles")).fetchone()
+        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM rental_fees")).fetchone()
         next_id = (max_id_result.max_id or 0) + 1
 
         db.session.execute(

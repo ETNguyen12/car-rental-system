@@ -3,24 +3,39 @@ import api from "../../../services/api";
 import { toast, ToastContainer } from "react-toastify";
 import { Modal, Button } from "react-bootstrap";
 
-const NewFeeModal = ({ show, onClose, fetchFees }) => {
+const NewRentalModal = ({ show, onClose, fetchRentals }) => {
   const [customers, setCustomers] = useState([]);
-  const [rentals, setRentals] = useState([]);
-  const [newFee, setNewFee] = useState({
-    rental_id: "",
-    type: "",
-    description: "",
-    amount: "",
+  const [availableVehicles, setAvailableVehicles] = useState([]);
+  const [newRental, setNewRental] = useState({
+    customer_id: "",
+    customer_name: "",
+    vehicle_id: "",
+    pickup_date: "",
+    dropoff_date: "",
+    odometer_before: 0,
+    odometer_after: null,
+    total_price: 0,
     status: "Unpaid",
-    due_date: "",
   });
 
   const [customerSearch, setCustomerSearch] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [noVehiclesMessage, setNoVehiclesMessage] = useState(false);
+
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  const getNextDate = (dateString) => {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split("T")[0];
+  };
 
   useEffect(() => {
-    if (newFee.rental_id) return;
+    if (newRental.customer_id) return;
 
     const fetchCustomers = async () => {
       try {
@@ -40,77 +55,126 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
       setCustomers([]);
       setShowDropdown(false);
     }
-  }, [customerSearch, newFee.rental_id]);
+  }, [customerSearch, newRental.customer_id]);
 
   useEffect(() => {
-    if (currentStep === 2 && newFee.customer_id) {
-      const fetchRentals = async () => {
+    if (currentStep === 2 && newRental.pickup_date && newRental.dropoff_date) {
+      const fetchAvailableVehicles = async () => {
         try {
-          const response = await api.get(`/employee/rentals?customer_id=${newFee.customer_id}`);
-          setRentals(response.data);
+          const response = await api.get(
+            `/employee/vehicles?pickup_date=${newRental.pickup_date}&dropoff_date=${newRental.dropoff_date}`
+          );
+          setAvailableVehicles(response.data);
+          setNoVehiclesMessage(response.data.length === 0);
         } catch (error) {
-          console.error("Error fetching rentals:", error);
+          console.error("Error fetching vehicles:", error);
         }
       };
 
-      fetchRentals();
+      fetchAvailableVehicles();
     }
-  }, [currentStep, newFee.customer_id]);
+  }, [currentStep, newRental.pickup_date, newRental.dropoff_date]);
+
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "pickup_date") {
+      setNewRental((prev) => ({
+        ...prev,
+        pickup_date: value,
+        dropoff_date:
+          prev.dropoff_date && new Date(value) >= new Date(prev.dropoff_date)
+            ? ""
+            : prev.dropoff_date,
+      }));
+    }
+
+    if (name === "dropoff_date") {
+      setNewRental((prev) => ({ ...prev, dropoff_date: value }));
+    }
+  };
 
   const handleCustomerSearch = (e) => {
     const value = e.target.value;
     setCustomerSearch(value);
-    setNewFee((prev) => ({ ...prev, customer_id: "", rental_id: "" }));
+    setNewRental((prev) => ({ ...prev, customer_name: value, customer_id: "" }));
   };
 
   const handleCustomerSelect = (customer) => {
-    setNewFee((prev) => ({
+    setNewRental((prev) => ({
       ...prev,
       customer_id: customer.id,
+      customer_name: customer.name,
     }));
     setShowDropdown(false);
     setCustomerSearch(customer.name);
   };
 
-  const handleRentalSelect = (e) => {
-    setNewFee((prev) => ({ ...prev, rental_id: e.target.value }));
+  const handleVehicleSelect = (e) => {
+    const vehicleId = e.target.value;
+    const selectedVehicle = availableVehicles.find(
+      (v) => v.id === parseInt(vehicleId)
+    );
+    const days =
+      (new Date(newRental.dropoff_date) - new Date(newRental.pickup_date)) /
+      (1000 * 60 * 60 * 24);
+    const totalPrice = days * selectedVehicle.daily_rental_rate;
+    setNewRental((prev) => ({
+      ...prev,
+      vehicle_id: vehicleId,
+      total_price: totalPrice.toFixed(2),
+    }));
   };
 
-  const handleAddFee = async () => {
+  const handleAddRental = async () => {
+    const payload = {
+      customer_id: newRental.customer_id,
+      vehicle_id: newRental.vehicle_id,
+      pickup_date: newRental.pickup_date,
+      dropoff_date: newRental.dropoff_date,
+      odometer_before: newRental.odometer_before || 0,
+      odometer_after: newRental.odometer_after,
+      total_price: parseFloat(newRental.total_price) || 0,
+      status: newRental.status,
+    };
+
     try {
-      const response = await api.post("/employee/fees/create", newFee);
+      const response = await api.post("/employee/rentals/create", payload);
       if (response.status === 201) {
         onClose();
-        fetchFees();
+        fetchRentals();
 
-        toast.success("Fee created successfully!", {
+        toast.success("Rental created successfully!", {
           position: "top-right",
           autoClose: 3000,
         });
 
-        setNewFee({
-          rental_id: "",
-          type: "",
-          description: "",
-          amount: "",
-          status: "Unpaid",
-          due_date: "",
+        setNewRental({
+          customer_id: "",
+          customer_name: "",
+          vehicle_id: "",
+          pickup_date: "",
+          dropoff_date: "",
+          odometer_before: 0,
+          odometer_after: null,
+          total_price: 0,
+          status: "Pending Payment",
         });
         setCustomerSearch("");
         setCustomers([]);
         setCurrentStep(1);
       } else {
-        toast.error(response.data.error || "Failed to create fee.");
+        toast.error(response.data.error || "Failed to create rental.");
       }
     } catch (error) {
-      toast.error("Failed to create fee. Please try again.");
+      toast.error("Failed to create rental. Please try again.");
     }
   };
 
   const handleNext = () => {
     if (currentStep === 1) {
-      if (!newFee.customer_id) {
-        toast.error("Please select a customer.");
+      if (!newRental.customer_id || !newRental.pickup_date || !newRental.dropoff_date) {
+        toast.error("Please select a customer and enter valid dates.");
         return;
       }
       setCurrentStep(2);
@@ -128,7 +192,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
       <ToastContainer />
       <Modal show={show} onHide={onClose} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Add New Fee</Modal.Title>
+          <Modal.Title>Add New Rental</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {currentStep === 1 && (
@@ -158,68 +222,74 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
                   </ul>
                 )}
               </div>
+
+              {newRental.customer_id && (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label">Pickup Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="pickup_date"
+                      min={getTodayDate()}
+                      onChange={handleDateChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Dropoff Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="dropoff_date"
+                      min={
+                        newRental.pickup_date
+                          ? getNextDate(newRental.pickup_date)
+                          : getTodayDate()
+                      }
+                      onChange={handleDateChange}
+                    />
+                  </div>
+                </>
+              )}
             </form>
           )}
 
           {currentStep === 2 && (
             <form>
-              <div className="mb-3">
-                <label className="form-label">Rental</label>
+              <label className="form-label">Vehicle</label>
+              {noVehiclesMessage ? (
+                <div className="alert alert-warning" role="alert">
+                  No vehicles are available for the selected dates.
+                </div>
+              ) : (
                 <select
                   className="form-control"
-                  name="rental_id"
-                  value={newFee.rental_id}
-                  onChange={handleRentalSelect}
+                  name="vehicle_id"
+                  value={newRental.vehicle_id}
+                  onChange={handleVehicleSelect}
                 >
                   <option value="" disabled hidden>
-                    Select Rental
+                    Select Vehicle
                   </option>
-                  {rentals.map((rental) => (
-                    <option key={rental.id} value={rental.id}>
-                      Rental #{rental.id} ({rental.vehicle})
+                  {availableVehicles.map((vehicle) => (
+                    <option key={vehicle.id} value={vehicle.id}>
+                      {vehicle.model} (${vehicle.daily_rental_rate}/day)
                     </option>
                   ))}
                 </select>
-              </div>
+              )}
 
-              <div className="mb-3">
-                <label className="form-label">Type</label>
+              <div
+                className={`mb-3 mt-3 ${
+                  !newRental.vehicle_id ? "hidden-total-price" : ""
+                }`}
+              >
+                <label className="form-label">Total Price</label>
                 <input
                   type="text"
                   className="form-control"
-                  name="type"
-                  value={newFee.type}
-                  onChange={(e) => setNewFee({ ...newFee, type: e.target.value })}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Description</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="description"
-                  value={newFee.description}
-                  onChange={(e) => setNewFee({ ...newFee, description: e.target.value })}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Amount</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="amount"
-                  value={newFee.amount}
-                  onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Due Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="due_date"
-                  value={newFee.due_date}
-                  onChange={(e) => setNewFee({ ...newFee, due_date: e.target.value })}
+                  value={`$${newRental.total_price}`}
+                  readOnly
                 />
               </div>
             </form>
@@ -239,10 +309,10 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
           {currentStep === 2 && (
             <Button
               variant="primary"
-              onClick={handleAddFee}
-              disabled={!newFee.rental_id || !newFee.type || !newFee.amount || !newFee.due_date}
+              onClick={handleAddRental}
+              disabled={!newRental.vehicle_id || noVehiclesMessage}
             >
-              Add Fee
+              Add Rental
             </Button>
           )}
         </Modal.Footer>
@@ -251,4 +321,4 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   );
 };
 
-export default NewFeeModal;
+export default NewRentalModal;
