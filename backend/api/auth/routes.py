@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from . import auth_bp
 from flask import request, jsonify
 from sqlalchemy.exc import IntegrityError
@@ -49,7 +50,7 @@ def signup():
 
         # Insert user into Users table
         user = Users(
-            type="Customer",
+            role="Customer",
             first_name=data["first_name"],
             last_name=data["last_name"],
             email=data["email"],
@@ -127,4 +128,60 @@ def login():
         return jsonify({"status": "success", "message": "Login successful", "user": {"id": user.id, "email": user.email, "type": user.type}}), 200
 
     except Exception as e:
+        return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500
+    
+    
+@auth_bp.route('/customers/create', methods=['POST'])
+def create_customer_account():
+    try:
+        # Parse request JSON
+        data = request.get_json()
+        print(data)
+        required_fields = [
+            "first_name", "last_name", "email", "phone_number",
+            "birth_date", "address_line1", "city", "state", "zip_code", "license_number", "policy_number"
+        ]
+
+        # Validate required fields
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"status": "error", "message": f"{field} is required"}), 400
+
+        address_line2 = data.get("address_line2")
+        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM users")).fetchone()
+        next_id = (max_id_result.max_id or 0) + 1
+
+        user = Users(
+            id=next_id, 
+            role="Customer",
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            phone_number=data["phone_number"]
+        )
+        db.session.add(user)
+        db.session.flush() 
+
+        customer_details = CustomerDetails(
+            customer_id=user.id,
+            birth_date=data["birth_date"],
+            address_line1=data["address_line1"],
+            address_line2 = data.get("address_line2") or None,
+            city=data["city"],
+            state=data["state"],
+            zip_code=data["zip_code"],
+            license_number=data["license_number"],
+            policy_number=data["policy_number"]
+        )
+        db.session.add(customer_details)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Customer account created successfully", "user": {"id": user.id, "email": user.email}}), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": "User with this email, license number, or policy number already exists", "details": str(e)}), 409
+
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500

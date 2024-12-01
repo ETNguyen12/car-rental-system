@@ -21,6 +21,19 @@ function UserMain() {
     }
   };
 
+  const onSaveUser = async (userData) => {
+    try {
+      const response = await api.post("/auth/customers/create", userData); // Adjust endpoint if needed
+      if (response.status === 201) {
+        toast.success("User added successfully!");
+        fetchUsers(); // Refresh the list
+      }
+    } catch (error) {
+      console.error("Error saving user:", error);
+      toast.error("Failed to save user.");
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -44,6 +57,7 @@ function UserMain() {
         selectedUser={selectedUser}
         onRowClick={setSelectedUser}
         formatDate={formatDate}
+        onSaveUser={onSaveUser} 
       />
       <div className="bg-white shadow-sm" style={{ width: "35%", padding: "1.5rem", overflowY: "auto" }}>
         <UserDetails 

@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import NewVehicleModal from "./NewVehicleModal";
 
-const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onAddVehicle }) => {
+const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onSaveVehicle }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   // Filter vehicles based on search query
   const filteredVehicles = vehicles.filter((vehicle) =>
     vehicle.model.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleAddVehicle = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
@@ -27,7 +37,7 @@ const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onAddVehicle }) 
           {/* Add Button */}
           <button
             className="btn rounded-circle"
-            onClick={onAddVehicle}
+            onClick={handleAddVehicle}
           >
             +
           </button>
@@ -69,6 +79,13 @@ const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onAddVehicle }) 
           </tbody>
         </table>
       </div>
+
+      {/* New Vehicle Modal */}
+      <NewVehicleModal
+        show={showModal}
+        onClose={handleCloseModal}
+        onSave={onSaveVehicle}
+      />
     </div>
   );
 };

@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
+from sqlite3 import IntegrityError
 from . import employee_bp
 from flask import request, jsonify
 from sqlalchemy import text
 from api.extensions import db
+from api.models import Vehicles
 
 @employee_bp.route('/rentals/info', methods=['GET'])
 def get_rentals():
@@ -197,29 +199,31 @@ def create_new_rental():
         vehicle_data = vehicle_query.fetchone()
 
         odometer_before = vehicle_data[0]  
-        print(odometer_before)
         current_utc_time = datetime.now(timezone.utc)
+        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM rentals")).fetchone()
+        next_id = (max_id_result.max_id or 0) + 1
 
         # Insert the new rental into the database
         db.session.execute(
             text("""
                 INSERT INTO rentals (
-                    customer_id, vehicle_id, pickup_date, dropoff_date, 
+                    id, customer_id, vehicle_id, pickup_date, dropoff_date, 
                     odometer_before, odometer_after, total_price, status, 
                     created_at, last_updated_at
                 ) VALUES (
-                    :customer_id, :vehicle_id, :pickup_date, :dropoff_date, 
+                    :id, :customer_id, :vehicle_id, :pickup_date, :dropoff_date, 
                     :odometer_before, :odometer_after, :total_price, :status, 
                     :created_at, :last_updated_at
                 )
             """),
             {
+                'id': next_id,
                 'customer_id': data['customer_id'],
                 'vehicle_id': data['vehicle_id'],
                 'pickup_date': data['pickup_date'],
                 'dropoff_date': data['dropoff_date'],
                 'odometer_before': odometer_before,
-                'odometer_after': data['odometer_after'],
+                'odometer_after': data.get('odometer_after', None),
                 'total_price': data.get('total_price', 0),
                 'status': data['status'],
                 'created_at': current_utc_time,
@@ -290,10 +294,10 @@ def delete_rental(rental_id):
         db.session.rollback()
         return jsonify({"error": "Failed to delete rental", "details": str(e)}), 500
 
+
 @employee_bp.route('/rental-fees/info', methods=['GET'])
 def get_rental_fees():
     try:
-        # Optional query parameters for filtering
         status = request.args.get('status')
         due_date = request.args.get('due_date')
         fee_type = request.args.get('type')
@@ -464,3 +468,54 @@ def get_users():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
+@employee_bp.route('/vehicles/create', methods=['POST'])
+def create_vehicle():
+    try:
+        # Parse request JSON
+        data = request.get_json()
+        required_fields = [
+            "color", "type", "year", "make", "model", "vin",
+            "license_plate", "fuel", "seat_capacity", "odometer_reading",
+            "maintenance_due_date", "daily_rental_rate", "status"
+        ]
+
+        # Validate required fields
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"status": "error", "message": f"{field} is required"}), 400
+            
+        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM vehicles")).fetchone()
+        next_id = (max_id_result.max_id or 0) + 1
+
+        # Insert vehicle into the database
+        vehicle = Vehicles(
+            id=next_id,
+            color=data["color"],
+            type=data["type"],
+            year=data["year"],
+            make=data["make"],
+            model=data["model"],
+            vin=data["vin"],
+            license_plate=data["license_plate"],
+            fuel=data["fuel"],
+            seat_capacity=data["seat_capacity"],
+            odometer_reading=data["odometer_reading"],
+            maintenance_due_date=data["maintenance_due_date"],
+            daily_rental_rate=data["daily_rental_rate"],
+            status=data["status"],
+            created_at=datetime.now(),
+            last_updated_at=datetime.now()
+        )
+        db.session.add(vehicle)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Vehicle created successfully", "vehicle": vehicle.id}), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": "A vehicle with this VIN or license plate already exists", "details": str(e)}), 409
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": "An error occurred", "details": str(e)}), 500

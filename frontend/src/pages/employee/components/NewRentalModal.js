@@ -15,7 +15,7 @@ const NewRentalModal = ({ show, onClose, fetchRentals }) => {
     odometer_before: 0,
     odometer_after: null,
     total_price: 0,
-    status: "Pending Payment",
+    status: "Unpaid",
   });
 
   const [customerSearch, setCustomerSearch] = useState("");

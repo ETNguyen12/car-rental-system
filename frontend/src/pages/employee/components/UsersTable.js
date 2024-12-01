@@ -1,20 +1,22 @@
 import React, { useState } from "react";
+import NewUserModal from "./NewUserModal";
 
-const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onAddUser }) => {
+const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  // Filter users based on search query
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleAddUser = () => setShowModal(true);
 
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">
         <h4 className="table-name m-0">Users</h4>
         <div className="d-flex gap-2 align-items-center">
-          {/* Search Input */}
           <input
             type="text"
             placeholder="Search name or email"
@@ -23,12 +25,7 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onAddUser }) 
             className="form-control"
             style={{ maxWidth: "400px" }}
           />
-
-          {/* Add Button */}
-          <button
-            className="btn rounded-circle"
-            onClick={onAddUser}
-          >
+          <button className="btn rounded-circle" onClick={handleAddUser}>
             +
           </button>
         </div>
@@ -69,6 +66,12 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onAddUser }) 
           </tbody>
         </table>
       </div>
+
+      <NewUserModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={onSaveUser}
+      />
     </div>
   );
 };

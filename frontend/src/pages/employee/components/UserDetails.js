@@ -57,10 +57,6 @@ const UserDetails = ({ selectedUser, formatDate }) => {
               <td><strong>Policy:</strong></td>
               <td>{selectedUser.policy_number}</td>
             </tr>
-            <tr>
-              <td><strong>Phone Number:</strong></td>
-              <td>{selectedUser.phone_number}</td>
-            </tr>
           </tbody>
         </table>
       </div>
