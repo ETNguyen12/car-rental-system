@@ -139,25 +139,25 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental, onCon
           </Button>
         )}
 
+        {/* Confirm Payment Button */}
+        {selectedRental.status === "Unpaid" && (
+          <Button
+            variant="success"
+            className="m-2"
+            onClick={() => setShowPaymentModal(true)}
+          >
+            $
+          </Button>
+        )}
+
         {/* Delete Rental Button */}
-        {selectedRental.status !== "Completed" && selectedRental.status !== "Ongoing" && (
+        {selectedRental.status !== "Completed" && selectedRental.status !== "Ongoing" && selectedRental.status !== "Canceled" && (
           <Button
             variant="danger"
             className="m-2"
             onClick={() => setShowDeleteModal(true)}
           >
             ✗
-          </Button>
-        )}
-
-        {/* Confirm Payment Button */}
-        {selectedRental.status === "Unpaid" && (
-          <Button
-            variant="info"
-            className="m-2"
-            onClick={() => setShowPaymentModal(true)}
-          >
-            💲
           </Button>
         )}
       </div>

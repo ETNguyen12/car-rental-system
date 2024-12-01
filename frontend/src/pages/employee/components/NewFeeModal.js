@@ -220,7 +220,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
                     ))
                   ) : (
                     <option value="" disabled>
-                      No rentals found for this customer.
+                      No completed rentals found for this customer.
                     </option>
                   )}
                 </select>

@@ -21,19 +21,8 @@ function FeeMain() {
     }
   };
 
-  const updateFeeStatus = async () => {
-    try {
-      await api.put("/employee/rental-fees/update_status");
-      console.log("Fee statuses updated successfully");
-    } catch (error) {
-      console.error("Error updating fee statuses:", error);
-      toast.error("Failed to update fee statuses.");
-    }
-  };
-
   useEffect(() => {
     const initializeData = async () => {
-      await updateFeeStatus();
       await fetchFees();
     };
 
