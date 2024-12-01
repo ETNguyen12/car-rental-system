@@ -12,8 +12,8 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate }) => {
             <tr>
               <th style={{ width: "30%" }}>Name</th>
               <th style={{ width: "40%" }}>Email</th>
-              <th style={{ width: "15%" }}>Birth Date</th>
-              <th style={{ width: "15%" }}>Last Rental</th>
+              <th style={{ width: "20%" }}>Birth Date</th>
+              <th style={{ width: "10%" }}>State</th>
             </tr>
           </thead>
           <tbody>
@@ -27,7 +27,7 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate }) => {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{formatDate(user.birth_date)}</td>
-                <td>{formatDate(user.last_rental)}</td>
+                <td>{user.state}</td>
               </tr>
             ))}
           </tbody>

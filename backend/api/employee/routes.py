@@ -115,6 +115,25 @@ def get_customers():
     return jsonify([dict(row._mapping) for row in customers]), 200
 
 
+@employee_bp.route('/rentals/<int:rental_id>/confirm-payment', methods=['PUT'])
+def confirm_payment(rental_id):
+    try:
+        query = """
+            UPDATE rentals
+            SET status = 'Reserved'
+            WHERE id = :rental_id
+            AND status = 'Unpaid'
+        """
+        result = db.session.execute(text(query), {"rental_id": rental_id})
+        if result.rowcount == 0:
+            return jsonify({"error": "Rental not found or not in Pending Payment status."}), 404
+        db.session.commit()
+        return jsonify({"message": "Payment confirmed successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
 @employee_bp.route('/vehicles', methods=['GET'])
 def get_available_vehicles():
     pickup_date = request.args.get('pickup_date')
@@ -415,3 +434,4 @@ def get_users():
         return jsonify([dict(row._mapping) for row in users]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    

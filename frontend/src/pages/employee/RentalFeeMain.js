@@ -41,7 +41,16 @@ function FeeMain() {
   }, []);
 
   const formatCurrency = (amount) => `$${parseFloat(amount).toFixed(2)}`;
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+  
+    const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, "0"); 
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); 
+    const year = date.getUTCFullYear();
+  
+    return `${month}/${day}/${year}`;
+  };
 
   return (
     <div className="container-fluid bg-light py-2" style={{ display: "flex", height: "100vh" }}>

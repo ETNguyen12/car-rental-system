@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import { Modal, Button } from "react-bootstrap";
 
-const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => {
+const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental, onConfirmPayment }) => {
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [odometerAfter, setOdometerAfter] = useState("");
 
   if (!selectedRental) {
@@ -17,10 +18,13 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
   }
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+  
     const date = new Date(dateString);
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const year = date.getFullYear();
+    const day = String(date.getUTCDate()).padStart(2, "0"); 
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); 
+    const year = date.getUTCFullYear();
+  
     return `${month}/${day}/${year}`;
   };
 
@@ -38,6 +42,11 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
   const handleDelete = () => {
     onDeleteRental(selectedRental.rental_id);
     setShowDeleteModal(false);
+  };
+
+  const handlePayment = () => {
+    onConfirmPayment(selectedRental.rental_id);
+    setShowPaymentModal(false);
   };
 
   return (
@@ -123,16 +132,25 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
           variant="success"
           className="m-2"
           onClick={() => setShowCompleteModal(true)}
-          disabled={selectedRental.status != "Ongoing"}
+          disabled={selectedRental.status !== "Ongoing"}
         >
           ✓
         </Button>
         <Button
           variant="danger"
+          className="m-2"
           onClick={() => setShowDeleteModal(true)}
           disabled={selectedRental.status === "Completed" || selectedRental.status === "Ongoing"}
         >
           ✗
+        </Button>
+        <Button
+          variant="info"
+          className="m-2"
+          onClick={() => setShowPaymentModal(true)}
+          disabled={selectedRental.status !== "Unpaid"}
+        >
+          💲
         </Button>
       </div>
 
@@ -178,6 +196,24 @@ const RentalDetails = ({ selectedRental, onCompleteRental, onDeleteRental }) => 
           </Button>
           <Button variant="danger" onClick={handleDelete}>
             Delete Rental
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Confirm Payment Modal */}
+      <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Payment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to confirm payment for this rental?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPaymentModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="info" onClick={handlePayment}>
+            Confirm Payment
           </Button>
         </Modal.Footer>
       </Modal>

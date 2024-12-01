@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import api from '../../services/api';
+import api from "../../services/api";
 import Navbar from "./components/Navbar";
 import RentalsTable from "./components/RentalsTable";
 import RentalDetails from "./components/RentalDetails";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/employee.css";
 
@@ -43,8 +43,8 @@ function RentalMain() {
     try {
       await api.put(`/employee/rentals/${rentalId}/complete`, { odometer_after: odometerAfter });
       toast.success("Rental marked as completed successfully!");
-      fetchRentals(); 
-      setSelectedRental(null); 
+      fetchRentals();
+      setSelectedRental(null);
     } catch (error) {
       console.error("Error completing rental:", error);
       toast.error("Failed to mark rental as completed. Please try again.");
@@ -55,36 +55,46 @@ function RentalMain() {
     try {
       await api.delete(`/employee/rentals/${rentalId}`);
       toast.success("Rental deleted successfully!");
-      fetchRentals(); 
-      setSelectedRental(null); 
+      fetchRentals();
+      setSelectedRental(null);
     } catch (error) {
       console.error("Error deleting rental:", error);
       toast.error("Failed to delete rental. Please try again.");
     }
   };
 
+  const onConfirmPayment = async (rentalId) => {
+    try {
+      await api.put(`/employee/rentals/${rentalId}/confirm-payment`);
+      toast.success("Payment confirmed successfully!");
+      fetchRentals();
+      setSelectedRental(null);
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      toast.error("Failed to confirm payment. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const initializeData = async () => {
-      await updateVehicleOdometers(); 
-      await updateRentalStatus(); 
-      await fetchRentals(); 
+      await updateVehicleOdometers();
+      await updateRentalStatus();
+      await fetchRentals();
     };
 
     initializeData();
   }, []);
 
   const formatDateRange = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-  
-    const format = (date, includeYear = false) => {
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
+    const format = (dateString, includeYear = false) => {
+      const date = new Date(dateString);
+      const day = String(date.getUTCDate()).padStart(2, "0"); 
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0"); 
       const year = includeYear ? `/${date.getFullYear().toString().slice(-2)}` : "";
       return `${month}/${day}${year}`;
     };
-  
-    return `${format(start, true)} - ${format(end, true)}`;
+
+    return `${format(startDate, true)} - ${format(endDate, true)}`;
   };
 
   const formatCustomerName = (fullName) => {
@@ -108,6 +118,7 @@ function RentalMain() {
           selectedRental={selectedRental}
           onCompleteRental={onCompleteRental}
           onDeleteRental={onDeleteRental}
+          onConfirmPayment={onConfirmPayment}
           formatDateRange={formatDateRange}
         />
       </div>
