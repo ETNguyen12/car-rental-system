@@ -68,6 +68,25 @@ const UserDetails = ({ selectedUser, formatDate, onDeleteUser }) => {
           </tbody>
         </table>
       </div>
+      <div className="mb-3">
+        <h6 className="text-primary">Ongoing Rental Information</h6>
+        <table className="table table-bordered">
+          <tbody>
+            <tr>
+              <td><strong>Address:</strong></td>
+              <td style={{ whiteSpace: "pre-line" }}>{formatAddress(selectedUser)}</td>
+            </tr>
+            <tr>
+              <td><strong>License:</strong></td>
+              <td>{selectedUser.license_number}</td>
+            </tr>
+            <tr>
+              <td><strong>Policy:</strong></td>
+              <td>{selectedUser.policy_number}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       {/* Action Buttons */}
       <div className="text-center">

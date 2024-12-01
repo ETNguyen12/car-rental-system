@@ -68,7 +68,7 @@ function VehicleMain() {
 
   const onSaveVehicle = async (newVehicle) => {
     try {
-      const response = await api.post("/employee/vehicles/create", newVehicle);
+      await api.post("/employee/vehicles/create", newVehicle);
       toast.success("Vehicle added successfully!");
       fetchVehicles();
     } catch (error) {

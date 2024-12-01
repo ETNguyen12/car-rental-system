@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from sqlite3 import IntegrityError
 from . import employee_bp
 from flask import request, jsonify
@@ -79,17 +79,18 @@ def update_vehicle_odometer():
         db.session.execute(
             text("""
                 UPDATE vehicles
-                SET odometer_reading = (
+                SET odometer_reading = COALESCE((
                     SELECT MAX(r.odometer_after)
                     FROM rentals r
                     WHERE r.vehicle_id = vehicles.id
-                )
+                ), odometer_reading)
                 WHERE vehicles.id IN (
                     SELECT DISTINCT vehicle_id
                     FROM rentals
                 )
             """)
         )
+
         db.session.execute(
             text("""
                 UPDATE rentals
@@ -404,7 +405,13 @@ def get_users():
                     SELECT MAX(r.dropoff_date) 
                     FROM rentals r
                     WHERE r.customer_id = u.id
-                ) AS last_rental
+                ) AS last_rental,
+                EXISTS (
+                    SELECT 1
+                    FROM rentals r
+                    WHERE r.customer_id = u.id
+                    AND r.status = 'Ongoing'
+                ) AS currently_renting
             FROM users u
             LEFT JOIN customer_details cd ON u.id = cd.customer_id
             WHERE u.role = 'Customer'

@@ -12,6 +12,7 @@ drop type if exists fee_type cascade;
 drop type if exists user_roles cascade;
 
 CREATE TYPE "vehicle_type" AS ENUM (
+  'Coupe',
   'Sedan',
   'SUV',
   'Minivan',
@@ -48,7 +49,8 @@ CREATE TYPE "statuses" AS ENUM (
 CREATE TYPE "fee_type" AS ENUM (
   'Damage',
   'Late',
-  'Cleaning'
+  'Cleaning',
+  'Fuel'
 );
 
 CREATE TYPE "user_roles" AS ENUM (

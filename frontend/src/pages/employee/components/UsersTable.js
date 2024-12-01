@@ -35,10 +35,10 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th style={{ width: "30%" }}>Name</th>
+              <th style={{ width: "40%" }}>Name</th>
               <th style={{ width: "40%" }}>Email</th>
-              <th style={{ width: "20%" }}>Birth Date</th>
               <th style={{ width: "10%" }}>State</th>
+              <th style={{ width: "10%" }}>Ongoing?</th>
             </tr>
           </thead>
           <tbody>
@@ -52,13 +52,13 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
                 >
                   <td>{user.name}</td>
                   <td>{user.email}</td>
-                  <td>{formatDate(user.birth_date)}</td>
                   <td>{user.state}</td>
+                  <td>{user.currently_renting ? "✓" : ""}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center">
+                <td colSpan="5" className="text-center">
                   No users found.
                 </td>
               </tr>

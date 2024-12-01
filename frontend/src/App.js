@@ -1,7 +1,6 @@
 import React from 'react';
 import './styles/App.css';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import StartImage from './components/StartImage'; 
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthMain } from './pages/auth';
 import { RentalMain, FeeMain, VehicleMain, UserMain } from './pages/employee';
 import { ToastContainer } from "react-toastify";

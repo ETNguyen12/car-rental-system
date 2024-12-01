@@ -24,12 +24,6 @@ const FeesTable = ({
 
   const handleAddFee = () => setShowModal(true);
 
-  const handleSaveFee = (feeData) => {
-    // Call API to save the fee
-    fetchFees(); // Refresh the fee list
-    setShowModal(false); // Close the modal
-  };
-
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">

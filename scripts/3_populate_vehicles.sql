@@ -1,3 +1,15 @@
-insert into public.vehicles (id, color, type, year, make, model, vin, license_plate, fuel, seat_capacity, odometer_reading, maintenance_due_date, daily_rental_rate, total_times_rented, status, created_at, last_updated_at)
-values  (2, 'Black', 'SUV', '2014', 'Acura', 'MDX', '2FTRX18L8XCA12345', 'JLY1774', 'Hybrid', 7, 114280, '2024-12-12', 229, 0, 'Available', '2024-11-27 19:29:59.000000', '2024-11-27 19:30:03.000000'),
-        (1, 'White', 'Sedan', '2018', 'Acura', 'TLX', '1HGCM82633A123456', 'SGR9559', 'Gasoline', 5, 72150, '2026-06-07', 149, 0, 'Available', '2024-11-27 19:28:15.000000', '2024-11-27 19:28:17.000000');
+INSERT INTO public.vehicles (id, color, type, year, make, model, vin, license_plate, fuel, seat_capacity, odometer_reading, maintenance_due_date, daily_rental_rate, total_times_rented, status, created_at, last_updated_at)
+VALUES
+    (1, 'White', 'Sedan', '2018', 'Acura', 'TLX', '1HGCM82633A123456', 'SGR9559', 'Gasoline', 5, 72150, '2026-06-07', 149, 0, 'Available', '2024-11-27 19:28:15.000000', '2024-11-27 19:28:17.000000'),
+    (2, 'Black', 'SUV', '2014', 'Acura', 'MDX', '2FTRX18L8XCA12345', 'JLY1774', 'Hybrid', 7, 114280, '2024-12-12', 229, 0, 'Available', '2024-11-27 19:29:59.000000', '2024-11-27 19:30:03.000000'),
+    (3, 'Silver', 'SUV', '2019', 'Chevy', 'Tahoe', '3GNEK18Z06G123456', 'BRH9943', 'Gasoline', 8, 94320, '2025-07-15', 199, 0, 'Available', '2024-11-27 19:31:10.000000', '2024-11-27 19:31:15.000000'),
+    (4, 'Blue', 'Sedan', '2014', 'Honda', 'Civic', '2HGEJ6618RH123456', 'GRD8521', 'Gasoline', 5, 153320, '2024-05-20', 139, 0, 'Available', '2024-11-27 19:32:10.000000', '2024-11-27 19:32:15.000000'),
+    (5, 'Red', 'Sedan', '2021', 'Toyota', 'Camry', '4T1BF3EK5BU123456', 'TRK4420', 'Hybrid', 5, 50210, '2025-11-11', 169, 0, 'Available', '2024-11-27 19:33:10.000000', '2024-11-27 19:33:15.000000'),
+    (6, 'Green', 'SUV', '2008', 'Subaru', 'Outback', '4S4BP61C087123456', 'JXN2319', 'Gasoline', 5, 182310, '2024-10-10', 129, 0, 'Available', '2024-11-27 19:34:10.000000', '2024-11-27 19:34:15.000000'),
+    (7, 'Yellow', 'Coupe', '2017', 'Porsche', '911', 'WP0AA2A90HS123456', 'PRC9123', 'Gasoline', 2, 65320, '2025-06-06', 399, 0, 'Available', '2024-11-27 19:35:10.000000', '2024-11-27 19:35:15.000000'),
+    (8, 'Blue', 'Truck', '2019', 'Ford', 'F-150', '1FTFW1ET1EFA123456', 'FRD8934', 'Diesel', 5, 84210, '2025-08-22', 249, 0, 'Available', '2024-11-27 19:36:10.000000', '2024-11-27 19:36:15.000000'),
+    (9, 'Gray', 'SUV', '2019', 'Acura', 'Q5', 'WA1D4AFY6J2134567', 'ACR1983', 'Gasoline', 5, 60210, '2024-09-01', 219, 0, 'Available', '2024-11-27 19:37:10.000000', '2024-11-27 19:37:15.000000'),
+    (10, 'White', 'SUV', '2020', 'Tesla', 'Model Y', '5YJYGDEE7LF123456', 'TES1120', 'Electric', 5, 42110, '2025-03-15', 349, 0, 'Available', '2024-11-27 19:38:10.000000', '2024-11-27 19:38:15.000000'),
+    (11, 'Silver', 'Truck', '2023', 'Tesla', 'Cyber Truck', '5YJRCDEE3MA123456', 'TES3323', 'Electric', 6, 1210, '2025-12-01', 399, 0, 'Available', '2024-11-27 19:39:10.000000', '2024-11-27 19:39:15.000000'),
+    (12, 'Gray', 'Coupe', '1982', 'DMC', 'Delorean', 'SCEDT26T3BD123456', 'DMC1982', 'Gasoline', 2, 93320, '2024-07-20', 499, 0, 'Available', '2024-11-27 19:40:10.000000', '2024-11-27 19:40:15.000000'),
+    (13, 'Red', 'SUV', '2025', 'Lamborghini', 'Urus', 'ZPBUCZF18P1234567', 'LMB5555', 'Gasoline', 4, 110, '2026-12-31', 799, 0, 'Available', '2024-11-27 19:41:10.000000', '2024-11-27 19:41:15.000000');

@@ -22,6 +22,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
   });
 
   const vehicleTypes = [
+    "Coupe",
     "Sedan",
     "SUV",
     "Mini Van",
