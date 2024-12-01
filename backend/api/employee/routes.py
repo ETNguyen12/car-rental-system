@@ -422,7 +422,19 @@ def get_users():
                     FROM rentals r
                     WHERE r.customer_id = u.id
                     AND r.status = 'Ongoing'
-                ) AS currently_renting
+                ) AS currently_renting,
+                (
+                    SELECT json_agg(json_build_object(
+                        'vehicle', v.year || ' ' || v.make || ' ' || v.model,
+                        'date_range', r.pickup_date || ' to ' || r.dropoff_date,
+                        'total_price', r.total_price,
+                        'status', r.status
+                    ))
+                    FROM rentals r
+                    JOIN vehicles v ON r.vehicle_id = v.id
+                    WHERE r.customer_id = u.id
+                    AND r.status = 'Ongoing'
+                ) AS ongoing_rentals
             FROM users u
             LEFT JOIN customer_details cd ON u.id = cd.customer_id
             WHERE u.role = 'Customer'

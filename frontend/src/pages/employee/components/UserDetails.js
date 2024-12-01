@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import StatusBadge from './StatusBadge';
 
 const UserDetails = ({ selectedUser, formatDate, onDeleteUser }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -68,25 +69,38 @@ const UserDetails = ({ selectedUser, formatDate, onDeleteUser }) => {
           </tbody>
         </table>
       </div>
-      <div className="mb-3">
-        <h6 className="text-primary">Ongoing Rental Information</h6>
-        <table className="table table-bordered">
-          <tbody>
-            <tr>
-              <td><strong>Address:</strong></td>
-              <td style={{ whiteSpace: "pre-line" }}>{formatAddress(selectedUser)}</td>
-            </tr>
-            <tr>
-              <td><strong>License:</strong></td>
-              <td>{selectedUser.license_number}</td>
-            </tr>
-            <tr>
-              <td><strong>Policy:</strong></td>
-              <td>{selectedUser.policy_number}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {selectedUser.currently_renting && (
+        <div className="mb-3">
+          <h6 className="text-primary">Ongoing Rental Information</h6>
+          {selectedUser.ongoing_rentals && selectedUser.ongoing_rentals.length > 0 ? (
+            selectedUser.ongoing_rentals.map((rental, index) => (
+              <table key={index} className="table table-bordered mb-3">
+                <tbody>
+                  <tr>
+                    <td><strong>Vehicle:</strong></td>
+                    <td>{rental.vehicle}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Date Range:</strong></td>
+                    <td>{rental.date_range}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Total Price:</strong></td>
+                    <td>${rental.total_price}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Status:</strong></td>
+                    <td><StatusBadge status={rental.status} /></td>
+                  </tr>
+                </tbody>
+              </table>
+            ))
+          ) : (
+            <p>No ongoing rentals.</p>
+          )}
+        </div>
+      )}
+
 
       {/* Action Buttons */}
       <div className="text-center">
