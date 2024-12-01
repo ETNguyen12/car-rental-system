@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const NewVehicleModal = ({ show, onClose, onSave }) => {
-  const [currentSection, setCurrentSection] = useState(1); // Tracks the current section
+  const [currentSection, setCurrentSection] = useState(1);
   const [formData, setFormData] = useState({
     color: "",
     type: "",
@@ -18,8 +18,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
     odometer_reading: "",
     maintenance_due_date: "",
     daily_rental_rate: "",
-    total_times_rented: 0, // Default to 0
-    status: "Available", // Default to "Available"
+    status: "Available", 
   });
 
   const vehicleTypes = [
@@ -37,6 +36,13 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
     "Electric",
     "Hybrid",
   ];
+
+  const tomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,6 +63,22 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
         return false;
       }
     }
+
+    if (currentSection === 2 && formData.seat_capacity <= 0) {
+      toast.error("Seat capacity must be greater than 0.");
+      return false;
+    }
+
+    if (currentSection === 2 && formData.odometer_reading < 0) {
+      toast.error("Odometer reading must be 0 or greater.");
+      return false;
+    }
+
+    if (currentSection === 3 && formData.maintenance_due_date <= tomorrowDate) {
+      toast.error("Maintenance due date must be in the future.");
+      return false;
+    }
+
     return true;
   };
 
@@ -91,7 +113,6 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
       odometer_reading: "",
       maintenance_due_date: "",
       daily_rental_rate: "",
-      total_times_rented: 0,
       status: "Available",
     });
     setCurrentSection(1);
@@ -256,6 +277,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
                       type="number"
                       name="seat_capacity"
                       value={formData.seat_capacity}
+                      min={0} 
                       onChange={handleChange}
                       required
                     />
@@ -270,6 +292,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
                   type="number"
                   name="odometer_reading"
                   value={formData.odometer_reading}
+                  min={0} 
                   onChange={handleChange}
                   required
                 />
@@ -289,6 +312,7 @@ const NewVehicleModal = ({ show, onClose, onSave }) => {
                   type="date"
                   name="maintenance_due_date"
                   value={formData.maintenance_due_date}
+                  min={tomorrowDate} 
                   onChange={handleChange}
                   required
                 />

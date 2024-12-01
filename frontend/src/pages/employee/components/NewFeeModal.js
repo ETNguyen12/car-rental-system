@@ -26,6 +26,12 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const tomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  };
+
   useEffect(() => {
     if (newFee.customer_id) return;
 
@@ -90,6 +96,11 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
   };
 
   const handleAddFee = async () => {
+    if (newFee.amount <= 0) {
+      toast.error("Amount must be greater than 0.");
+      return;
+    }
+
     const payload = {
       rental_id: newFee.rental_id,
       type: newFee.type,
@@ -259,6 +270,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
                   className="form-control"
                   name="amount"
                   value={newFee.amount}
+                  min={1}
                   onChange={(e) => setNewFee({ ...newFee, amount: e.target.value })}
                 />
               </div>
@@ -269,6 +281,7 @@ const NewFeeModal = ({ show, onClose, fetchFees }) => {
                   className="form-control"
                   name="due_date"
                   value={newFee.due_date}
+                  min={tomorrowDate()}
                   onChange={(e) => setNewFee({ ...newFee, due_date: e.target.value })}
                 />
               </div>
