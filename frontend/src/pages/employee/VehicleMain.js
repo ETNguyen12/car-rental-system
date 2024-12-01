@@ -30,6 +30,18 @@ function VehicleMain() {
     }
   };
 
+  const onDeleteVehicle = async (vehicleId) => {
+    try {
+      await api.delete(`/employee/vehicles/${vehicleId}`);
+      toast.success("Vehicle deleted successfully!");
+      fetchVehicles();
+      setSelectedVehicle(null);
+    } catch (error) {
+      console.error("Error deleting vehicle:", error);
+      toast.error("Failed to delete vehicle. Please try again.");
+    }
+  };
+
   const onSaveVehicle = async (newVehicle) => {
     try {
       const response = await api.post("/employee/vehicles/create", newVehicle);
@@ -60,7 +72,10 @@ function VehicleMain() {
         onSaveVehicle={onSaveVehicle}
       />
       <div className="bg-white shadow-sm" style={{ width: "35%", padding: "1.5rem", overflowY: "auto" }}>
-        <VehicleDetails selectedVehicle={selectedVehicle} />
+        <VehicleDetails 
+          selectedVehicle={selectedVehicle} 
+          onDeleteVehicle={onDeleteVehicle}
+        />
       </div>
     </div>
   );

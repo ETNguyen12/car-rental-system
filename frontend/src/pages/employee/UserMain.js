@@ -21,12 +21,24 @@ function UserMain() {
     }
   };
 
+  const onDeleteUser = async (userId) => {
+    try {
+      await api.delete(`/employee/users/${userId}`);
+      toast.success("User deleted successfully!");
+      fetchUsers();
+      setSelectedUser(null);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Failed to delete user. Please try again.");
+    }
+  };
+
   const onSaveUser = async (userData) => {
     try {
-      const response = await api.post("/auth/customers/create", userData); // Adjust endpoint if needed
+      const response = await api.post("/auth/customers/create", userData); 
       if (response.status === 201) {
         toast.success("User added successfully!");
-        fetchUsers(); // Refresh the list
+        fetchUsers(); 
       }
     } catch (error) {
       console.error("Error saving user:", error);
@@ -62,6 +74,7 @@ function UserMain() {
       <div className="bg-white shadow-sm" style={{ width: "35%", padding: "1.5rem", overflowY: "auto" }}>
         <UserDetails 
           selectedUser={selectedUser} 
+          onDeleteUser={onDeleteUser}
           formatDate={formatDate}
         />
       </div>

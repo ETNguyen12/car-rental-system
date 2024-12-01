@@ -21,6 +21,18 @@ function FeeMain() {
     }
   };
 
+  const onDeleteFee = async (feeId) => {
+    try {
+      await api.delete(`/employee/rental-fees/${feeId}`);
+      toast.success("Rental fee deleted successfully!");
+      fetchFees();
+      setSelectedFee(null);
+    } catch (error) {
+      console.error("Error deleting rental fee:", error);
+      toast.error("Failed to delete rental fee. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const initializeData = async () => {
       await fetchFees();
@@ -57,6 +69,7 @@ function FeeMain() {
           selectedFee={selectedFee}
           formatCurrency={formatCurrency}
           formatDate={formatDate}
+          onDeleteFee={onDeleteFee}
         />
       </div>
     </div>

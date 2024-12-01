@@ -76,7 +76,6 @@ def update_rental_status():
 @employee_bp.route('/vehicles/update_odometer', methods=['PUT'])
 def update_vehicle_odometer():
     try:
-        # Update vehicles' odometer_reading based on the maximum odometer_after from rentals
         db.session.execute(
             text("""
                 UPDATE vehicles
@@ -91,8 +90,6 @@ def update_vehicle_odometer():
                 )
             """)
         )
-
-        # Update rentals' odometer_before for ongoing rentals
         db.session.execute(
             text("""
                 UPDATE rentals
@@ -181,6 +178,7 @@ def get_available_vehicles():
 
     return jsonify([dict(row._mapping) for row in vehicles]), 200
 
+
 @employee_bp.route('/rentals/create', methods=['POST'])
 def create_new_rental():
     data = request.json
@@ -203,7 +201,6 @@ def create_new_rental():
         max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM rentals")).fetchone()
         next_id = (max_id_result.max_id or 0) + 1
 
-        # Insert the new rental into the database
         db.session.execute(
             text("""
                 INSERT INTO rentals (
@@ -284,6 +281,10 @@ def complete_rental(rental_id):
 def delete_rental(rental_id):
     try:
         db.session.execute(
+            text("DELETE FROM rental_fees WHERE rental_id = :rental_id"),
+            {'rental_id': rental_id}
+        )
+        db.session.execute(
             text("DELETE FROM rentals WHERE id = :rental_id"),
             {'rental_id': rental_id}
         )
@@ -293,6 +294,21 @@ def delete_rental(rental_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Failed to delete rental", "details": str(e)}), 500
+    
+
+@employee_bp.route('/rental-fees/<int:fee_id>', methods=['DELETE'])
+def delete_fee(fee_id):
+    try:
+        db.session.execute(
+            text("DELETE FROM rental_fees WHERE id = :fee_id"),
+            {'fee_id': fee_id}
+        )
+        db.session.commit()
+        return jsonify({"message": "Rental fee deleted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete rental fee", "details": str(e)}), 500
 
 
 @employee_bp.route('/rental-fees/info', methods=['GET'])
@@ -402,7 +418,6 @@ def get_users():
 @employee_bp.route('/vehicles/create', methods=['POST'])
 def create_vehicle():
     try:
-        # Parse request JSON
         data = request.get_json()
         required_fields = [
             "color", "type", "year", "make", "model", "vin",
@@ -410,7 +425,6 @@ def create_vehicle():
             "maintenance_due_date", "daily_rental_rate", "status"
         ]
 
-        # Validate required fields
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"status": "error", "message": f"{field} is required"}), 400
@@ -418,7 +432,6 @@ def create_vehicle():
         max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM vehicles")).fetchone()
         next_id = (max_id_result.max_id or 0) + 1
 
-        # Insert vehicle into the database
         vehicle = Vehicles(
             id=next_id,
             color=data["color"],
@@ -458,7 +471,6 @@ def get_rentals_by_customer():
         return jsonify({"error": "customer_id is required"}), 400
 
     try:
-        # Fetch rentals for the given customer_id
         rentals = db.session.execute(
             text("""
                 SELECT 
@@ -477,7 +489,6 @@ def get_rentals_by_customer():
             {"customer_id": customer_id}
         ).fetchall()
 
-        # Transform results into a list of dictionaries
         rentals_list = [
             {
                 "id": rental.id,
@@ -497,19 +508,16 @@ def get_rentals_by_customer():
 @employee_bp.route('/fees/create', methods=['POST'])
 def create_rental_fee():
     try:
-        # Parse the request data
         data = request.json
         required_fields = ['rental_id', 'type', 'description', 'amount', 'status', 'due_date']
         missing_fields = [field for field in required_fields if field not in data]
 
-        # Validate required fields
         if missing_fields:
             return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
         
         max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM vehicles")).fetchone()
         next_id = (max_id_result.max_id or 0) + 1
 
-        # Insert the rental fee into the database
         db.session.execute(
             text("""
                 INSERT INTO rental_fees (rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
@@ -531,3 +539,69 @@ def create_rental_fee():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+    
+
+@employee_bp.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        db.session.execute(
+            text("""
+                DELETE FROM rental_fees 
+                WHERE rental_id IN (
+                    SELECT id 
+                    FROM rentals 
+                    WHERE customer_id = :user_id
+                )
+            """),
+            {'user_id': user_id}
+        )
+        db.session.execute(
+            text("DELETE FROM rentals WHERE customer_id = :user_id"),
+            {'user_id': user_id}
+        )
+        db.session.execute(
+            text("DELETE FROM customer_details WHERE customer_id = :user_id"),
+            {'user_id': user_id}
+        )
+        db.session.execute(
+            text("DELETE FROM users WHERE id = :user_id"),
+            {'user_id': user_id}
+        )
+        
+        db.session.commit()
+        return jsonify({"message": "User and all associated records deleted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete user", "details": str(e)}), 500
+    
+
+@employee_bp.route('/vehicles/<int:vehicle_id>', methods=['DELETE'])
+def delete_vehicle(vehicle_id):
+    try:
+        db.session.execute(
+            text("""
+                DELETE FROM rental_fees 
+                WHERE rental_id IN (
+                    SELECT id 
+                    FROM rentals 
+                    WHERE vehicle_id = :vehicle_id
+                )
+            """),
+            {'vehicle_id': vehicle_id}
+        )
+        db.session.execute(
+            text("DELETE FROM rentals WHERE vehicle_id = :vehicle_id"),
+            {'vehicle_id': vehicle_id}
+        )
+        db.session.execute(
+            text("DELETE FROM vehicles WHERE id = :vehicle_id"),
+            {'vehicle_id': vehicle_id}
+        )
+        
+        db.session.commit()
+        return jsonify({"message": "Vehicle and all associated records deleted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete vehicle", "details": str(e)}), 500
