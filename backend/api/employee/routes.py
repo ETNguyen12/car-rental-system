@@ -341,77 +341,6 @@ def get_rental_fees():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-@employee_bp.route('/rental-fees', methods=['POST'])
-def create_rental_fee():
-    try:
-        data = request.json
-        required_fields = ['rental_id', 'type', 'description', 'amount', 'status', 'due_date']
-        missing_fields = [field for field in required_fields if field not in data]
-
-        if missing_fields:
-            return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
-
-        db.session.execute(
-            text("""
-                INSERT INTO rental_fees (rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
-                VALUES (:rental_id, :type, :description, :amount, :status, :due_date, NOW(), NOW())
-            """),
-            {
-                'rental_id': data['rental_id'],
-                'type': data['type'],
-                'description': data['description'],
-                'amount': data['amount'],
-                'status': data['status'],
-                'due_date': data['due_date']
-            }
-        )
-        db.session.commit()
-
-        return jsonify({"message": "Rental fee created successfully"}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-
-@employee_bp.route('/rental-fees/<int:fee_id>/status', methods=['PUT'])
-def update_rental_fee_status(fee_id):
-    try:
-        data = request.json
-        new_status = data.get('status')
-
-        if not new_status:
-            return jsonify({"error": "Missing 'status' field"}), 400
-
-        db.session.execute(
-            text("""
-                UPDATE rental_fees
-                SET status = :status, last_updated_at = NOW()
-                WHERE id = :fee_id
-            """),
-            {'status': new_status, 'fee_id': fee_id}
-        )
-        db.session.commit()
-
-        return jsonify({"message": "Rental fee status updated successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-
-@employee_bp.route('/rental-fees/<int:fee_id>', methods=['DELETE'])
-def delete_rental_fee(fee_id):
-    try:
-        db.session.execute(
-            text("DELETE FROM rental_fees WHERE id = :fee_id"),
-            {'fee_id': fee_id}
-        )
-        db.session.commit()
-
-        return jsonify({"message": "Rental fee deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
     
 @employee_bp.route('/vehicles/info', methods=['GET'])
 def get_vehicles():
@@ -562,3 +491,42 @@ def get_rentals_by_customer():
 
     except Exception as e:
         return jsonify({"error": "An error occurred while fetching rentals", "details": str(e)}), 500
+
+
+@employee_bp.route('/fees/create', methods=['POST'])
+def create_rental_fee():
+    try:
+        # Parse the request data
+        data = request.json
+        required_fields = ['rental_id', 'type', 'description', 'amount', 'status', 'due_date']
+        missing_fields = [field for field in required_fields if field not in data]
+
+        # Validate required fields
+        if missing_fields:
+            return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
+        
+        max_id_result = db.session.execute(text("SELECT MAX(id) AS max_id FROM vehicles")).fetchone()
+        next_id = (max_id_result.max_id or 0) + 1
+
+        # Insert the rental fee into the database
+        db.session.execute(
+            text("""
+                INSERT INTO rental_fees (rental_id, type, description, amount, status, due_date, created_at, last_updated_at)
+                VALUES (:rental_id, :type, :description, :amount, :status, :due_date, NOW(), NOW())
+            """),
+            {
+                'id': next_id,
+                'rental_id': data['rental_id'],
+                'type': data['type'],
+                'description': data['description'],
+                'amount': data['amount'],
+                'status': data['status'],
+                'due_date': data['due_date']
+            }
+        )
+        db.session.commit()
+
+        return jsonify({"message": "Rental fee created successfully"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
