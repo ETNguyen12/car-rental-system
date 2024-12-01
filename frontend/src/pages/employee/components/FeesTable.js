@@ -1,12 +1,91 @@
-import React from "react";
-import StatusBadge from "./StatusBadge"; 
+import React, { useState } from "react";
+import StatusBadge from "./StatusBadge";
+import FilterIcon from "../../../assets/filter.png"; // Ensure the path is correct
 
-const FeesTable = ({ fees, selectedFee, onRowClick, formatCurrency, formatDate }) => {
+const FeesTable = ({
+  fees,
+  selectedFee,
+  onRowClick,
+  formatCurrency,
+  formatDate,
+  fetchFees,
+  onAddFee,
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterActive, setFilterActive] = useState(false);
+
+  // Filter fees based on search query and filter state
+  const filteredFees = fees.filter((fee) => {
+    const matchesSearch = fee.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = !filterActive || fee.status !== "Paid"; 
+    return matchesSearch && matchesFilter;
+  });
+
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">
         <h4 className="table-name m-0">Rental Fees</h4>
+        <div className="d-flex gap-2 align-items-center">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="form-control"
+            style={{ maxWidth: "400px" }}
+          />
+
+          {/* Filter Button */}
+          <div
+            style={{
+              position: "relative",
+              cursor: "pointer",
+              width: "32px",
+              height: "32px",
+            }}
+            onClick={() => setFilterActive(!filterActive)}
+          >
+            <img
+              src={FilterIcon}
+              alt="Filter Icon"
+              style={{ width: "100%", height: "100%" }}
+            />
+            {!filterActive && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  backgroundColor: "red",
+                  color: "white",
+                  borderRadius: "50%",
+                  padding: "4px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  lineHeight: "12px",
+                  height: "18px",
+                  width: "18px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                X
+              </span>
+            )}
+          </div>
+
+          {/* Add Button */}
+          <button
+            className="btn rounded-circle"
+            onClick={onAddFee}
+          >
+            +
+          </button>
+        </div>
       </div>
+
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
@@ -19,22 +98,30 @@ const FeesTable = ({ fees, selectedFee, onRowClick, formatCurrency, formatDate }
             </tr>
           </thead>
           <tbody>
-            {fees.map((fee) => (
-              <tr
-                key={fee.id}
-                onClick={() => onRowClick(fee)}
-                className={selectedFee?.id === fee.id ? "table-primary" : ""}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{fee.name}</td>
-                <td>{fee.type}</td>
-                <td>{formatCurrency(fee.amount)}</td>
-                <td>{formatDate(fee.due_date)}</td>
-                <td>
-                  <StatusBadge status={fee.status} />
+            {filteredFees.length > 0 ? (
+              filteredFees.map((fee) => (
+                <tr
+                  key={fee.id}
+                  onClick={() => onRowClick(fee)}
+                  className={selectedFee?.id === fee.id ? "table-primary" : ""}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{fee.name}</td>
+                  <td>{fee.type}</td>
+                  <td>{formatCurrency(fee.amount)}</td>
+                  <td>{formatDate(fee.due_date)}</td>
+                  <td>
+                    <StatusBadge status={fee.status} />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No fees found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

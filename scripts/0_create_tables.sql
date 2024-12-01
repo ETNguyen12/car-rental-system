@@ -14,6 +14,7 @@ drop type if exists user_roles cascade;
 CREATE TYPE "vehicle_type" AS ENUM (
   'Sedan',
   'SUV',
+  'Minivan',
   'Van',
   'Truck',
   'Other'
@@ -28,14 +29,14 @@ CREATE TYPE "fuel_type" AS ENUM (
 
 CREATE TYPE "vehicle_status" AS ENUM (
   'Available',
-  'Rented',
-  'Maintenance',
-  'Reserved'
+  'Unavailable',
+  'Maintenance'
 );
 
 CREATE TYPE "statuses" AS ENUM (
   'Unpaid',
   'Paid',
+  'Overdue',
   'Reserved',
   'Ongoing',
   'Completed',

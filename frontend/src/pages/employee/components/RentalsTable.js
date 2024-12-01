@@ -1,21 +1,38 @@
 import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import NewRentalModal from "./NewRentalModal";
-import FilterIcon from "../../../assets/filter.png"; 
+import FilterIcon from "../../../assets/filter.png";
 
 const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName, formatDateRange, fetchRentals }) => {
   const [showModal, setShowModal] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredRentals = filterActive
-    ? rentals.filter((rental) => rental.status !== "Completed" && rental.status !== "Canceled")
-    : rentals;
+  // Filter rentals based on search query and filter status
+  const filteredRentals = rentals.filter((rental) => {
+    const matchesSearch =
+      rental.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      rental.vehicle.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = !filterActive || (rental.status !== "Completed" && rental.status !== "Canceled");
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <div className="bg-light mx-1" style={{ width: "60%", overflowY: "auto" }}>
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">
         <h4 className="table-name m-0">Rental Reservations</h4>
         <div className="d-flex gap-2 align-items-center">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search name or vehicle"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="form-control"
+            style={{ maxWidth: "400px" }}
+          />
+
+          {/* Filter Button */}
           <div
             style={{
               position: "relative",
@@ -54,6 +71,8 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
               </span>
             )}
           </div>
+
+          {/* Add Button */}
           <button
             className="btn rounded-circle"
             onClick={() => setShowModal(true)}
@@ -62,6 +81,8 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
           </button>
         </div>
       </div>
+
+      {/* Table */}
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
@@ -73,21 +94,29 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
             </tr>
           </thead>
           <tbody>
-            {filteredRentals.map((rental) => (
-              <tr
-                key={rental.rental_id}
-                onClick={() => onRowClick(rental)}
-                className={selectedRental?.rental_id === rental.rental_id ? "table-primary" : ""}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{formatCustomerName(rental.customer_name)}</td>
-                <td>{rental.vehicle}</td>
-                <td>{formatDateRange(rental.pickup_date, rental.dropoff_date)}</td>
-                <td>
-                  <StatusBadge status={rental.status} />
+            {filteredRentals.length > 0 ? (
+              filteredRentals.map((rental) => (
+                <tr
+                  key={rental.rental_id}
+                  onClick={() => onRowClick(rental)}
+                  className={selectedRental?.rental_id === rental.rental_id ? "table-primary" : ""}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{formatCustomerName(rental.customer_name)}</td>
+                  <td>{rental.vehicle}</td>
+                  <td>{formatDateRange(rental.pickup_date, rental.dropoff_date)}</td>
+                  <td>
+                    <StatusBadge status={rental.status} />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No rentals found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
