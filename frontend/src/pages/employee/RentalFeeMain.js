@@ -33,6 +33,18 @@ function FeeMain() {
     }
   };
 
+  const onConfirmFeePayment = async (feeId) => {
+    try {
+      await api.put(`/employee/rental-fees/${feeId}/confirm-payment`);
+      toast.success("Fee payment confirmed successfully!");
+      fetchFees();
+      setSelectedFee(null);
+    } catch (error) {
+      console.error("Error confirming fee payment:", error);
+      toast.error("Failed to confirm fee payment. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const initializeData = async () => {
       await fetchFees();
@@ -70,6 +82,7 @@ function FeeMain() {
           formatCurrency={formatCurrency}
           formatDate={formatDate}
           onDeleteFee={onDeleteFee}
+          onConfirmFeePayment={onConfirmFeePayment}
         />
       </div>
     </div>

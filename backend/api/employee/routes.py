@@ -605,3 +605,60 @@ def delete_vehicle(vehicle_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Failed to delete vehicle", "details": str(e)}), 500
+    
+
+@employee_bp.route('/rental-fees/<int:fee_id>/confirm-payment', methods=['PUT'])
+def confirm_fee_payment(fee_id):
+    try:
+        query = """
+            UPDATE rental_fees
+            SET status = 'Paid'
+            WHERE id = :fee_id
+            AND status = 'Unpaid'
+        """
+        result = db.session.execute(text(query), {"fee_id": fee_id})
+        if result.rowcount == 0:
+            return jsonify({"error": "Rental fee not found or not in Pending Payment status."}), 404
+        db.session.commit()
+        return jsonify({"message": "Fee payment confirmed successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+
+@employee_bp.route('/maintenance/<int:vehicle_id>/schedule', methods=['PUT'])
+def schedule_maintenance(vehicle_id):
+    try:
+        query = """
+            UPDATE vehicles
+            SET status = 'Maintenance'
+            WHERE id = :vehicle_id
+            AND status = 'Available'
+        """
+        result = db.session.execute(text(query), {"vehicle_id": vehicle_id})
+        if result.rowcount == 0:
+            return jsonify({"error": "Vehicle not found or not in Available status."}), 404
+        db.session.commit()
+        return jsonify({"message": "Maintenance confirmed successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+
+@employee_bp.route('/maintenance/<int:vehicle_id>/finish', methods=['PUT'])
+def finish_maintenance(vehicle_id):
+    try:
+        query = """
+            UPDATE vehicles
+            SET status = 'Available'
+            WHERE id = :vehicle_id
+            AND status = 'Maintenance'
+        """
+        result = db.session.execute(text(query), {"vehicle_id": vehicle_id})
+        if result.rowcount == 0:
+            return jsonify({"error": "Vehicle not found or not in Maintenance status."}), 404
+        db.session.commit()
+        return jsonify({"message": "Maintenance finished successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

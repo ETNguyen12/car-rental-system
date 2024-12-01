@@ -42,11 +42,35 @@ function VehicleMain() {
     }
   };
 
+  const onScheduleMaintenance = async (vehicleId) => {
+    try {
+      await api.put(`/employee/maintenance/${vehicleId}/schedule`);
+      toast.success("Maintenance confirmed successfully!");
+      fetchVehicles();
+      setSelectedVehicle(null);
+    } catch (error) {
+      console.error("Error confirming maintenance:", error);
+      toast.error("Failed to confirm maintenance. Please try again.");
+    }
+  };
+
+  const onFinishMaintenance = async (vehicleId) => {
+    try {
+      await api.put(`/employee/maintenance/${vehicleId}/finish`);
+      toast.success("Maintenance finished successfully!");
+      fetchVehicles();
+      setSelectedVehicle(null);
+    } catch (error) {
+      console.error("Error confirming to finish maintenance:", error);
+      toast.error("Failed to confirm finishing maintenance. Please try again.");
+    }
+  };
+
   const onSaveVehicle = async (newVehicle) => {
     try {
       const response = await api.post("/employee/vehicles/create", newVehicle);
       toast.success("Vehicle added successfully!");
-      fetchVehicles(); // Refresh the list of vehicles
+      fetchVehicles();
     } catch (error) {
       console.error("Error saving vehicle:", error);
       if (error.response?.status === 409) {
@@ -75,6 +99,8 @@ function VehicleMain() {
         <VehicleDetails 
           selectedVehicle={selectedVehicle} 
           onDeleteVehicle={onDeleteVehicle}
+          onScheduleMaintenance={onScheduleMaintenance}
+          onFinishMaintenance={onFinishMaintenance}
         />
       </div>
     </div>
