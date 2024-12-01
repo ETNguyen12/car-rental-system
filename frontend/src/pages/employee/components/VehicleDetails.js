@@ -10,7 +10,7 @@ const VehicleDetails = ({ selectedVehicle, onScheduleMaintenance, onDeleteVehicl
   if (!selectedVehicle) {
     return (
       <>
-        <h4 className="mb-4 detail_header border-bottom pb-2 text-center">Vehicle Details</h4>
+        <h4 className="mb-4 detail_header border-bottom text-center">Vehicle Details</h4>
         <p className="text-center">Select a vehicle to see details.</p>
       </>
     );
@@ -33,7 +33,7 @@ const VehicleDetails = ({ selectedVehicle, onScheduleMaintenance, onDeleteVehicl
 
   return (
     <div>
-      <h4 className="mb-4 detail_header border-bottom pb-2 text-center">Vehicle Details</h4>
+      <h4 className="mb-4 detail_header border-bottom text-center">Vehicle Details</h4>
       <div className="mb-3">
         <h6 className="text-primary">Vehicle Information</h6>
         <table className="table table-bordered">

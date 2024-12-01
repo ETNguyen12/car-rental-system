@@ -1,7 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
+  const navLinkStyle = {
+    display: "block",
+    textAlign: "center",
+    padding: "10px 0",
+    textDecoration: "none",
+    fontSize: "1rem",
+    fontWeight: 500,
+    color: "#007bff",
+    transition: "background-color 0.3s ease, color 0.3s ease",
+  };
+
+  const activeLinkStyle = {
+    backgroundColor: "#007bff", 
+    color: "#ffffff",
+  };
+
   return (
     <div
       className="bg-white shadow-sm"
@@ -10,19 +26,55 @@ const Navbar = () => {
       <div className="border-bottom table_name text-center">
         <img src="https://static.thenounproject.com/png/386502-200.png" alt="logo" style={{width: '50px', height: '50px', margin: '10px 0px'}}></img>
       </div>
-      <ul className="nav flex-column">
-        <Link to="/employee/rentals" className="btn btn-link nav-link">
+
+      {/* Navigation Links */}
+      <ul
+        style={{
+          listStyleType: "none",
+          padding: 0,
+          margin: "20px 0 0 0",
+        }}
+      >
+        <NavLink
+          to="/employee/rentals"
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyle, ...activeLinkStyle }
+              : navLinkStyle
+          }
+        >
           Rentals
-        </Link>
-        <Link to="/employee/fees" className="btn btn-link nav-link">
+        </NavLink>
+        <NavLink
+          to="/employee/fees"
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyle, ...activeLinkStyle }
+              : navLinkStyle
+          }
+        >
           Rental Fees
-        </Link>
-        <Link to="/employee/vehicles" className="btn btn-link nav-link">
+        </NavLink>
+        <NavLink
+          to="/employee/vehicles"
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyle, ...activeLinkStyle }
+              : navLinkStyle
+          }
+        >
           Vehicles
-        </Link>
-        <Link to="/employee/users" className="btn btn-link nav-link">
+        </NavLink>
+        <NavLink
+          to="/employee/users"
+          style={({ isActive }) =>
+            isActive
+              ? { ...navLinkStyle, ...activeLinkStyle }
+              : navLinkStyle
+          }
+        >
           Users
-        </Link>
+        </NavLink>
       </ul>
     </div>
   );
