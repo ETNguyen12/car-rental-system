@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import NewUserModal from "./NewUserModal";
+import FilterIcon from "../../../assets/filter.png";
 
 const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [filterActive, setFilterActive] = useState(false);
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = !filterActive || user.currently_renting;
+    return matchesSearch && matchesFilter;
+  });
 
   const handleAddUser = () => setShowModal(true);
 
@@ -17,6 +21,7 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom header">
         <h4 className="table-name m-0">Users</h4>
         <div className="d-flex gap-2 align-items-center">
+          {/* Search Input */}
           <input
             type="text"
             placeholder="Search name or email"
@@ -25,12 +30,55 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
             className="form-control"
             style={{ maxWidth: "400px" }}
           />
+
+          {/* Filter Button */}
+          <div
+            style={{
+              position: "relative",
+              cursor: "pointer",
+              width: "32px",
+              height: "32px",
+            }}
+            onClick={() => setFilterActive(!filterActive)}
+          >
+            <img
+              src={FilterIcon}
+              alt="Filter Icon"
+              style={{ width: "100%", height: "100%" }}
+            />
+            {!filterActive && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  backgroundColor: "red",
+                  color: "white",
+                  borderRadius: "50%",
+                  padding: "4px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  lineHeight: "12px",
+                  height: "18px",
+                  width: "18px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                X
+              </span>
+            )}
+          </div>
+
+          {/* Add Button */}
           <button className="btn rounded-circle" onClick={handleAddUser}>
             +
           </button>
         </div>
       </div>
 
+      {/* Users Table */}
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
@@ -58,7 +106,7 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center">
+                <td colSpan="4" className="text-center">
                   No users found.
                 </td>
               </tr>
@@ -67,6 +115,7 @@ const UsersTable = ({ users, selectedUser, onRowClick, formatDate, onSaveUser })
         </table>
       </div>
 
+      {/* New User Modal */}
       <NewUserModal
         show={showModal}
         onClose={() => setShowModal(false)}

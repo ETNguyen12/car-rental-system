@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import NewVehicleModal from "./NewVehicleModal";
+import FilterIcon from "../../../assets/filter.png";
 
 const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onSaveVehicle }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [filterActive, setFilterActive] = useState(false);
 
-  // Filter vehicles based on search query
-  const filteredVehicles = vehicles.filter((vehicle) =>
-    vehicle.model.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    const matchesSearch = vehicle.model.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = !filterActive || vehicle.status === "Available";
+    return matchesSearch && matchesFilter;
+  });
 
   const handleAddVehicle = () => {
     setShowModal(true);
@@ -33,6 +36,46 @@ const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onSaveVehicle })
             className="form-control"
             style={{ maxWidth: "400px" }}
           />
+
+          {/* Filter Button */}
+          <div
+            style={{
+              position: "relative",
+              cursor: "pointer",
+              width: "32px",
+              height: "32px",
+            }}
+            onClick={() => setFilterActive(!filterActive)}
+          >
+            <img
+              src={FilterIcon}
+              alt="Filter Icon"
+              style={{ width: "100%", height: "100%" }}
+            />
+            {!filterActive && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-6px",
+                  right: "-6px",
+                  backgroundColor: "red",
+                  color: "white",
+                  borderRadius: "50%",
+                  padding: "4px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  lineHeight: "12px",
+                  height: "18px",
+                  width: "18px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                X
+              </span>
+            )}
+          </div>
 
           {/* Add Button */}
           <button

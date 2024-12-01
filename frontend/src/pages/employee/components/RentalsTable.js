@@ -8,7 +8,6 @@ const RentalsTable = ({ rentals, selectedRental, onRowClick, formatCustomerName,
   const [filterActive, setFilterActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter rentals based on search query and filter status
   const filteredRentals = rentals.filter((rental) => {
     const matchesSearch =
       rental.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||

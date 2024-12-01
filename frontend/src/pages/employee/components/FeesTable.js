@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import StatusBadge from "./StatusBadge";
-import FilterIcon from "../../../assets/filter.png"; // Ensure the path is correct
+import FilterIcon from "../../../assets/filter.png";
 import NewFeeModal from "./NewFeeModal";
 
 const FeesTable = ({
@@ -15,7 +15,6 @@ const FeesTable = ({
   const [filterActive, setFilterActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // Filter fees based on search query and filter state
   const filteredFees = fees.filter((fee) => {
     const matchesSearch = fee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = !filterActive || fee.status !== "Paid"; 
