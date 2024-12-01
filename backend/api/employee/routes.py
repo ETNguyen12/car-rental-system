@@ -329,7 +329,7 @@ def get_rental_fees():
                 rf.amount,
                 rf.status,
                 rf.due_date,
-                u.first_name || ' ' || u.last_name AS name,
+                u.first_name || ' ' || SUBSTRING(u.last_name, 1, 1) || '.' AS name,
                 u.phone_number,
                 u.email
             FROM rental_fees rf
@@ -426,7 +426,9 @@ def get_users():
                 (
                     SELECT json_agg(json_build_object(
                         'vehicle', v.year || ' ' || v.make || ' ' || v.model,
-                        'date_range', r.pickup_date || ' to ' || r.dropoff_date,
+                        'date_range', 
+                            TO_CHAR(r.pickup_date, 'MM/DD/YYYY') || ' - ' || 
+                            TO_CHAR(r.dropoff_date, 'MM/DD/YYYY'),
                         'total_price', r.total_price,
                         'status', r.status
                     ))

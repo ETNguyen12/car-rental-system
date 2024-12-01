@@ -49,8 +49,8 @@ const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onSaveVehicle })
           <thead>
             <tr>
               <th style={{ width: "40%" }}>Vehicle</th>
-              <th style={{ width: "20%" }}>Daily Rate</th>
               <th style={{ width: "20%" }}>Odometer</th>
+              <th style={{ width: "20%" }}>Daily Rate</th>
               <th style={{ width: "20%" }}>Status</th>
             </tr>
           </thead>
@@ -64,8 +64,8 @@ const VehiclesTable = ({ vehicles, selectedVehicle, onRowClick, onSaveVehicle })
                   style={{ cursor: "pointer" }}
                 >
                   <td>{vehicle.model}</td>
-                  <td>${vehicle.daily_rental_rate}</td>
                   <td>{vehicle.odometer_reading}</td>
+                  <td>${vehicle.daily_rental_rate}</td>
                   <td><StatusBadge status={vehicle.status} /></td>
                 </tr>
               ))
